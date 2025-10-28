@@ -15,7 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import SideDrawer from './SideDrawer';
 import SearchDialog from './SearchDialog';
-
+import { withRouter } from '/src/Helpers/withRouter.jsx';
 
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import SportsMartialArtsIcon from '@mui/icons-material/SportsMartialArts';
@@ -109,7 +109,13 @@ class NavBar extends Component {
                         alignItems: 'center',
                     }}>
 
-                        <Box display={'flex'} flexDirection={'row'} gap={'5px'} alignItems={'center'}>
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            cursor: 'pointer',
+                            userSelect: 'none',
+                        }}
+                            onClick={() => this.props.navigate('/')}>
                             <IconButton onClick={this.handleDrawerToggle}>
                                 <MenuIcon />
                             </IconButton>
@@ -195,14 +201,11 @@ class NavBar extends Component {
                         }}
                             flexDirection={'row'} alignItems={'center'}>
 
-                            <IconButton sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                gap: '5px'
-                            }}>
-                                <FavoriteBorderIcon sx={{
-                                    color: 'white'
-                                }} />
+                            <IconButton
+                                sx={{ display: 'flex', flexDirection: 'row', gap: '5px' }}
+                                onClick={() => this.props.navigate('/favorites')}
+                            >
+                                <FavoriteBorderIcon sx={{ color: 'white' }} />
                                 <Typography variant="h6" sx={{
                                     fontWeight: 'bold', color: 'white', ml: 1,
                                     display: { xs: 'none', md: 'block' }
@@ -211,14 +214,11 @@ class NavBar extends Component {
                                 </Typography>
                             </IconButton>
 
-                            <IconButton sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                gap: '5px'
-                            }}>
-                                <LoginIcon sx={{
-                                    color: 'white'
-                                }} />
+                            <IconButton
+                                sx={{ display: 'flex', flexDirection: 'row', gap: '5px' }}
+                                onClick={() => this.props.navigate('/login')}
+                            >
+                                <LoginIcon sx={{ color: 'white' }} />
                                 <Typography variant="h6" sx={{
                                     fontWeight: 'bold', color: 'white', ml: 1,
                                     display: { xs: 'none', md: 'block' }
@@ -226,6 +226,7 @@ class NavBar extends Component {
                                     Login
                                 </Typography>
                             </IconButton>
+
 
                         </Box>
                     </Toolbar>
@@ -246,4 +247,4 @@ class NavBar extends Component {
     }
 }
 
-export default NavBar
+export default withRouter(NavBar)

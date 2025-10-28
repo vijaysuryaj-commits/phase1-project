@@ -1,17 +1,20 @@
 import NavBar from "./Components/NavBar";
 import React from 'react'
 import './App.css'
-// import { Router, Route, Routes } from "react-router-dom";
+import {  Route, Routes, BrowserRouter } from "react-router-dom";
+import HomePage from "./Pages/HomePage";
+import FavoritesPage from './Pages/FavoritesPage'
+import LoginPage from "./Pages/LoginPage";
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <NavBar />
        <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes> 
-    </Router>
+    </BrowserRouter>
   )
 }
 

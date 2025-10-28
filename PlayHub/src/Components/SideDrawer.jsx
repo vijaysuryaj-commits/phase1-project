@@ -24,8 +24,13 @@ import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
 import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 
-class SideDrawer extends Component {
+import { withRouter } from '../Helpers/withRouter';
 
+class SideDrawer extends Component {
+    handleNavigation = (path) =>{
+        this.props.onClose();
+        this.props.navigate(path)
+    }
     render() {
         const genres = [
             { name: 'Shooter', icon: <MilitaryTechIcon /> },
@@ -92,14 +97,14 @@ class SideDrawer extends Component {
 
 
                     <List sx={listStyle}>
-                        <ListItem button>
+                        <ListItem button onClick={()=>this.handleNavigation('favorites')}>
                             <ListItemIcon >
                                 <FavoriteBorderIcon />
                             </ListItemIcon>
                             <ListItemText>Favorites</ListItemText>
                         </ListItem>
 
-                        <ListItem button>
+                        <ListItem button onClick={()=>this.handleNavigation('login')}>
                             <ListItemIcon >
                                 <LoginIcon />
                             </ListItemIcon>
@@ -144,7 +149,7 @@ class SideDrawer extends Component {
     }
 }
 
-export default SideDrawer;
+export default withRouter(SideDrawer);
 
 
 //add button favorite and replace with filled icon 
