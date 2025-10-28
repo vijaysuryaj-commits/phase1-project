@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  Box,
-  IconButton,
-  TextField,
-  InputAdornment,
-  Slide
-} from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import Slide from '@mui/material/Slide';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -25,7 +23,7 @@ class SearchDialog extends Component {
         onClose={onClose}
         fullWidth
         maxWidth="sm"
-        TransitionComponent={Transition}  
+        TransitionComponent={Transition}
         PaperProps={{
           sx: {
             backgroundColor: 'rgba(255,255,255,0.95)',

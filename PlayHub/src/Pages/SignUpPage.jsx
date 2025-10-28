@@ -1,32 +1,44 @@
 import React, { Component } from "react";
 import { Paper, Stack, TextField, Button, Typography, Alert } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function LoginWrapper(Component) {
+function SignupWrapper(Component) {
   return function WrappedComponent(props) {
     const auth = useAuth();
     const navigate = useNavigate();
-    const location = useLocation();
-    return <Component {...props} auth={auth} navigate={navigate} location={location} />;
+    return <Component {...props} auth={auth} navigate={navigate} />;
   };
 }
 
-class LoginPage extends Component {
+class SignupPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       username: "",
       password: "",
+      confirmPassword: "",
       error: "",
     };
   }
 
-  handleLogin = () => {
-    const success = this.props.auth.login(this.state.username, this.state.password);
+  handleSignup = () => {
+    const { username, password, confirmPassword } = this.state;
+
+    if (!username || !password) {
+      this.setState({ error: "Please fill all fields" });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      this.setState({ error: "Passwords do not match" });
+      return;
+    }
+
+    const success = this.props.auth.signup(username, password);
+
     if (success) {
-      const redirectPath = this.props.location.state?.path || "/";
-      this.props.navigate(redirectPath, { replace: true });
+      this.props.navigate("/", { replace: true });
     } else {
       this.setState({ error: this.props.auth.error });
     }
@@ -37,7 +49,7 @@ class LoginPage extends Component {
       <Paper elevation={3} sx={{ maxWidth: 400, margin: "50px auto", padding: 4 }}>
         <Stack spacing={3}>
           <Typography variant="h5" fontWeight="bold" textAlign="center">
-            Login
+            Sign Up
           </Typography>
 
           {this.state.error && <Alert severity="error">{this.state.error}</Alert>}
@@ -59,12 +71,21 @@ class LoginPage extends Component {
             onChange={(e) => this.setState({ password: e.target.value })}
           />
 
-          <Button variant="contained" onClick={this.handleLogin}>
-            Login
+          <TextField
+            label="Confirm Password"
+            type="password"
+            variant="outlined"
+            fullWidth
+            value={this.state.confirmPassword}
+            onChange={(e) => this.setState({ confirmPassword: e.target.value })}
+          />
+
+          <Button variant="contained" onClick={this.handleSignup}>
+            Create Account
           </Button>
 
-          <Button variant="text" onClick={() => this.props.navigate("/signup")}>
-            Don’t have an account? Sign Up
+          <Button variant="text" onClick={() => this.props.navigate("/login")}>
+            Already have an account? Login
           </Button>
         </Stack>
       </Paper>
@@ -72,4 +93,4 @@ class LoginPage extends Component {
   }
 }
 
-export default LoginWrapper(LoginPage);
+export default SignupWrapper(SignupPage);

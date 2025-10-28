@@ -13,21 +13,13 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import LoginIcon from '@mui/icons-material/Login';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import SideDrawer from './SideDrawer';
 import SearchDialog from './SearchDialog';
 import { withRouter } from '/src/Helpers/withRouter.jsx';
+import { useAuth } from "../context/AuthContext";
 
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
-import SportsMartialArtsIcon from '@mui/icons-material/SportsMartialArts';
-import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
-import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
-import CasinoIcon from '@mui/icons-material/Casino';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import BoltIcon from '@mui/icons-material/Bolt';
-import ExtensionIcon from '@mui/icons-material/Extension';
-import GroupsIcon from '@mui/icons-material/Groups';
-import SportsKabaddiIcon from '@mui/icons-material/SportsKabaddi';
-import SportsMmaIcon from '@mui/icons-material/SportsMma';
 
 class NavBar extends Component {
     constructor(props) {
@@ -37,21 +29,23 @@ class NavBar extends Component {
             drawerOpen: false,
             selectedGenre: null,
             searchOpen: false,
+            anchorEl: null,
         }
     }
 
     handleSearchToggle = () => {
         this.setState((prevState) => ({ showSearchBar: !prevState.showSearchBar }))
     }
+
     handleDrawerToggle = () => {
         this.setState((prevState) => ({ drawerOpen: !prevState.drawerOpen }))
     }
+
     handleResize = () => {
         const isDeskTop = window.innerWidth >= 900;
         if (isDeskTop && !this.state.showSearchBar) {
             this.setState({ showSearchBar: true });
-        }
-        else if (!isDeskTop && this.state.showSearchBar) {
+        } else if (!isDeskTop && this.state.showSearchBar) {
             this.setState({ showSearchBar: false })
         }
     }
@@ -63,59 +57,42 @@ class NavBar extends Component {
             drawerOpen: !isMobile
         })
     }
-    handleSearchOpen = () => {
-        this.setState({ searchOpen: true })
-    }
-    handleSearchClose = () => {
-        this.setState({ searchOpen: false })
-    }
+
+    handleSearchOpen = () => this.setState({ searchOpen: true })
+    handleSearchClose = () => this.setState({ searchOpen: false })
+
+    handleMenuOpen = (event) => this.setState({ anchorEl: event.currentTarget })
+    handleMenuClose = () => this.setState({ anchorEl: null })
+
     componentDidMount() {
         window.addEventListener('resize', this.handleResize);
     }
+
     componentWillUnmount() {
         window.removeEventListener('resize', this.handleResize)
     }
+
     render() {
-        const genres = [
-            { name: 'Shooter', icon: <MilitaryTechIcon /> },
-            { name: 'MMORPG', icon: <GroupsIcon /> },
-            { name: 'Battle Royale', icon: <CasinoIcon /> },
-            { name: 'Strategy', icon: <ExtensionIcon /> },
-            { name: 'ARPG', icon: <BoltIcon /> },
-            { name: 'Action RPG', icon: <SportsMartialArtsIcon /> },
-            { name: 'MMOARPG', icon: <AutoAwesomeIcon /> },
-            { name: 'Fighting', icon: <SportsMmaIcon /> },
-            { name: 'MOBA', icon: <SportsKabaddiIcon /> },
-            { name: 'Card Game', icon: <CasinoIcon /> },
-            { name: 'Dungeon Crawler', icon: <ExtensionIcon /> },
-            { name: 'MMO', icon: <GroupsIcon /> },
-            { name: 'Sports', icon: <SportsSoccerIcon /> },
-            { name: 'RPG', icon: <SportsEsportsIcon /> },
-            { name: 'Action Game', icon: <SportsMartialArtsIcon /> },
-        ];
+        const { auth } = this.props;
+        const { anchorEl } = this.state;
 
         return (
             <>
-                <AppBar position='static'
+                <AppBar
+                    position='static'
                     sx={{
                         padding: '5px',
                         boxShadow: 4,
                         borderRadius: '0 0 8px 8px',
                         backgroundColor: 'lightgray'
-                    }}>
-                    <Toolbar sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                    }}>
+                    }}
+                >
+                    <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 
-                        <Box sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            cursor: 'pointer',
-                            userSelect: 'none',
-                        }}
-                            onClick={() => this.props.navigate('/')}>
+                        <Box
+                            sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer', userSelect: 'none' }}
+                            onClick={() => this.props.navigate('/')}
+                        >
                             <IconButton onClick={this.handleDrawerToggle}>
                                 <MenuIcon />
                             </IconButton>
@@ -137,49 +114,37 @@ class NavBar extends Component {
                                 alignItems: 'center',
                             }}
                         >
-                            {(this.state.showSearchBar) && (
+                            {this.state.showSearchBar ? (
                                 <Slide direction='down' in={this.state.showSearchBar}>
                                     <TextField
                                         variant="outlined"
                                         placeholder="Search games..."
                                         InputProps={{
                                             endAdornment: (
-                                                <InputAdornment position="end" >
+                                                <InputAdornment position="end">
                                                     {this.state.showSearchBar && window.innerWidth < 900 ? (
-                                                        <IconButton
-                                                            onClick={this.handleSearchToggle}
-                                                            aria-label="close search"
-                                                        >
-                                                            <CloseIcon sx={{ color: 'gray', fontSize: '1.3rem', display: 'block', mr: '1px' }} />
+                                                        <IconButton onClick={this.handleSearchToggle}>
+                                                            <CloseIcon sx={{ color: 'gray', fontSize: '1.3rem' }} />
                                                         </IconButton>
                                                     ) : (
-                                                        <SearchIcon sx={{ color: 'gray', fontSize: '1.35rem', display: 'block', mr: '1px' }} />
+                                                        <SearchIcon sx={{ color: 'gray', fontSize: '1.35rem' }} />
                                                     )}
                                                 </InputAdornment>
                                             ),
                                         }}
                                         sx={{
                                             width: { xs: '100%', sm: '70%', md: '50%' },
-                                            height: { xs: '50px', sm: '50px' },
-                                            marginLeft: '20px',
                                             borderRadius: '40px',
                                             backgroundColor: 'white',
                                             '& .MuiOutlinedInput-root': {
                                                 borderRadius: '40px',
                                                 '& fieldset': { borderColor: 'transparent' },
-                                                '&:hover fieldset': { borderColor: 'transparent' },
-                                                '&.Mui-focused fieldset': { borderColor: 'transparent' },
                                             },
                                         }}
                                     />
-
-
                                 </Slide>
-                            )}
-
-                            {!this.state.showSearchBar && (
-
-                                < IconButton
+                            ) : (
+                                <IconButton
                                     onClick={this.handleSearchOpen}
                                     sx={{
                                         color: 'white',
@@ -189,48 +154,84 @@ class NavBar extends Component {
                                 >
                                     <SearchIcon />
                                 </IconButton>
-
                             )}
                         </Box>
 
-                        <Box sx={{
-                            display: {
-                                xs: this.state.showSearchBar ? 'none' : 'flex',
-                                md: 'flex',
-                            },
-                        }}
-                            flexDirection={'row'} alignItems={'center'}>
-
+                        <Box
+                            sx={{
+                                display: {
+                                    xs: this.state.showSearchBar ? 'none' : 'flex',
+                                    md: 'flex',
+                                },
+                            }}
+                            flexDirection="row"
+                            alignItems="center"
+                        >
                             <IconButton
                                 sx={{ display: 'flex', flexDirection: 'row', gap: '5px' }}
                                 onClick={() => this.props.navigate('/favorites')}
                             >
                                 <FavoriteBorderIcon sx={{ color: 'white' }} />
-                                <Typography variant="h6" sx={{
-                                    fontWeight: 'bold', color: 'white', ml: 1,
-                                    display: { xs: 'none', md: 'block' }
-                                }}>
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        fontWeight: 'bold',
+                                        color: 'white',
+                                        ml: 1,
+                                        display: { xs: 'none', md: 'block' },
+                                    }}
+                                >
                                     Favorites
                                 </Typography>
                             </IconButton>
 
-                            <IconButton
-                                sx={{ display: 'flex', flexDirection: 'row', gap: '5px' }}
-                                onClick={() => this.props.navigate('/login')}
-                            >
-                                <LoginIcon sx={{ color: 'white' }} />
-                                <Typography variant="h6" sx={{
-                                    fontWeight: 'bold', color: 'white', ml: 1,
-                                    display: { xs: 'none', md: 'block' }
-                                }}>
-                                    Login
-                                </Typography>
-                            </IconButton>
 
+                            {auth.user ? (
+                                <>
+                                    <IconButton onClick={this.handleMenuOpen}>
+                                        <Avatar sx={{ bgcolor: 'secondary.main'}}>
+                                            {auth.user.username
+                                                ? auth.user.username.charAt(0).toUpperCase()
+                                                : "U"}
+                                        </Avatar>
+                                    </IconButton>
 
+                                    <Menu
+                                        anchorEl={anchorEl}
+                                        open={Boolean(anchorEl)}
+                                        onClose={this.handleMenuClose}
+                                    >
+                                        <MenuItem onClick={() => { this.props.navigate('/profile'); this.handleMenuClose(); }}>
+                                            Profile
+                                        </MenuItem>
+                                        <MenuItem onClick={() => { auth.logout(); this.handleMenuClose(); this.props.navigate("/login"); }}>
+                                            Logout
+                                        </MenuItem>
+                                    </Menu>
+                                </>
+                            ) : (
+                                <IconButton
+                                    sx={{ display: 'flex', flexDirection: 'row', gap: '5px' }}
+                                    onClick={() => this.props.navigate('/login')}
+                                >
+                                    <LoginIcon sx={{ color: 'white' }} />
+                                    <Typography
+                                        variant="h6"
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            color: 'white',
+                                            ml: 1,
+                                            display: { xs: 'none', md: 'block' },
+                                        }}
+                                    >
+                                        Login
+                                    </Typography>
+                                </IconButton>
+                            )}
                         </Box>
                     </Toolbar>
-                </AppBar >
+                </AppBar>
+
 
                 <SideDrawer
                     open={this.state.drawerOpen}
@@ -240,11 +241,18 @@ class NavBar extends Component {
                 />
                 <SearchDialog
                     open={this.state.searchOpen}
-                    onClose={this.handleSearchClose} />
+                    onClose={this.handleSearchClose}
+                />
             </>
-
         )
     }
 }
 
-export default withRouter(NavBar)
+function withAuth(Component) {
+    return function WrappedWithAuth(props) {
+        const auth = useAuth();
+        return <Component {...props} auth={auth} />;
+    };
+}
+
+export default withRouter(withAuth(NavBar));

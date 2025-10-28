@@ -8,10 +8,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
-
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import GroupsIcon from '@mui/icons-material/Groups';
 import CasinoIcon from '@mui/icons-material/Casino';
@@ -25,13 +26,32 @@ import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 
 import { withRouter } from '../Helpers/withRouter';
+import { useAuth } from '../context/AuthContext';
+
+
+function withAuth(Component) {
+    return function WrappedWithAuth(props) {
+        const auth = useAuth();
+        return <Component {...props} auth={auth} />;
+    };
+}
 
 class SideDrawer extends Component {
-    handleNavigation = (path) =>{
+    handleNavigation = (path) => {
         this.props.onClose();
-        this.props.navigate(path)
-    }
+        this.props.navigate(path);
+    };
+
+    handleLogout = () => {
+        this.props.auth.logout();
+        this.props.onClose();
+        this.props.navigate('/login');
+    };
+
     render() {
+        const { open, onClose, selectedGenre, onCategorySelect } = this.props;
+        const { user } = this.props.auth;
+
         const genres = [
             { name: 'Shooter', icon: <MilitaryTechIcon /> },
             { name: 'MMORPG', icon: <GroupsIcon /> },
@@ -50,21 +70,24 @@ class SideDrawer extends Component {
             { name: 'Action Game', icon: <SportsMartialArtsIcon /> },
         ];
 
-        const { open, onClose, selectedGenre, onCategorySelect } = this.props;
         const listStyle = {
             cursor: 'pointer',
             '& .MuiListItemIcon-root': { minWidth: 40, color: 'grey.700' },
         };
 
         return (
-            <Drawer anchor="left" open={open} onClose={onClose}
+            <Drawer
+                anchor="left"
+                open={open}
+                onClose={onClose}
                 slotProps={{
                     paper: {
                         sx: {
                             backgroundColor: '#fafafa',
                         },
                     },
-                }}>
+                }}
+            >
                 <Box
                     sx={{
                         width: { xs: '70vw', sm: '40vw', md: '25vw' },
@@ -73,7 +96,6 @@ class SideDrawer extends Component {
                         height: '100%',
                     }}
                 >
-
                     <Box
                         sx={{
                             display: 'flex',
@@ -95,21 +117,38 @@ class SideDrawer extends Component {
 
                     <Divider sx={{ my: 1, borderBottomWidth: 0.8 }} variant="middle" />
 
-
                     <List sx={listStyle}>
-                        <ListItem button onClick={()=>this.handleNavigation('favorites')}>
-                            <ListItemIcon >
+                        <ListItem button onClick={() => this.handleNavigation('/favorites')}>
+                            <ListItemIcon>
                                 <FavoriteBorderIcon />
                             </ListItemIcon>
-                            <ListItemText>Favorites</ListItemText>
+                            <ListItemText primary="Favorites" />
                         </ListItem>
 
-                        <ListItem button onClick={()=>this.handleNavigation('login')}>
-                            <ListItemIcon >
-                                <LoginIcon />
-                            </ListItemIcon>
-                            <ListItemText>Login</ListItemText>
-                        </ListItem>
+                        {user ? (
+                            <>
+                                <ListItem button onClick={() => this.handleNavigation('/profile')}>
+                                    <ListItemIcon>
+                                        <AccountCircleIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary={`Hi, ${user.username}`} />
+                                </ListItem>
+
+                                <ListItem button onClick={this.handleLogout}>
+                                    <ListItemIcon>
+                                        <LogoutIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Logout" />
+                                </ListItem>
+                            </>
+                        ) : (
+                            <ListItem button onClick={() => this.handleNavigation('/login')}>
+                                <ListItemIcon>
+                                    <LoginIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Login" />
+                            </ListItem>
+                        )}
                     </List>
 
                     <Divider
@@ -119,20 +158,18 @@ class SideDrawer extends Component {
                         Categories
                     </Divider>
 
-                    <List
-                        sx={listStyle}>
+                    <List sx={listStyle}>
                         {genres.map((genre) => (
                             <ListItem
-                                sx={{
-
-                                    borderLeft: selectedGenre === genre.name ? '3px solid #1976d2' : 'none',
-                                    backgroundColor: selectedGenre === genre.name ? '#d7e3f0ff' : 'white'
-                                }}
-                                button
                                 key={genre.name}
+                                button
                                 onClick={() => onCategorySelect(genre.name)}
+                                sx={{
+                                    borderLeft: selectedGenre === genre.name ? '3px solid #1976d2' : 'none',
+                                    backgroundColor: selectedGenre === genre.name ? '#d7e3f0ff' : 'white',
+                                }}
                             >
-                                <ListItemIcon >{genre.icon}</ListItemIcon>
+                                <ListItemIcon>{genre.icon}</ListItemIcon>
                                 <ListItemText
                                     primary={genre.name}
                                     primaryTypographyProps={{
@@ -149,7 +186,4 @@ class SideDrawer extends Component {
     }
 }
 
-export default withRouter(SideDrawer);
-
-
-//add button favorite and replace with filled icon 
+export default withRouter(withAuth(SideDrawer));
