@@ -24,7 +24,7 @@ export function NextArrow(props) {
                 boxShadow: 3,
                 zIndex: 2,
                 "&:hover": { backgroundColor: "#115293" },
-                "@media (max-width: 600px)": { display: "none" }, // hide on mobile
+                "@media (max-width: 600px)": { display: "none" },
             }}
         >
             <ArrowForwardIosIcon sx={{ fontSize: 20 }} />

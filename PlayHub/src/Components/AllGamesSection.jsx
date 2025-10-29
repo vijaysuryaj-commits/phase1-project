@@ -18,6 +18,7 @@ import {
     Divider,
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { withRouter } from "../Helpers/withRouter";
 
 class AllGamesSection extends Component {
     constructor(props) {
@@ -124,6 +125,8 @@ class AllGamesSection extends Component {
             anchorEl,
         } = this.state;
 
+        const { navigate } = this.props;
+
         const categories = [
             "MMORPG",
             "Shooter",
@@ -144,7 +147,6 @@ class AllGamesSection extends Component {
         const indexOfFirst = indexOfLast - gamesPerPage;
         const currentGames = games.slice(indexOfFirst, indexOfLast);
         const totalPages = Math.ceil(games.length / gamesPerPage);
-
         const open = Boolean(anchorEl);
 
         return (
@@ -160,6 +162,7 @@ class AllGamesSection extends Component {
                     🎯 {this.props.selectedGenre || "All Games"}
                 </Typography>
 
+
                 <Box display="flex" justifyContent="center" mb={4}>
                     <Button
                         variant="contained"
@@ -173,6 +176,7 @@ class AllGamesSection extends Component {
                     >
                         Filters
                     </Button>
+
 
                     <Menu
                         anchorEl={anchorEl}
@@ -276,16 +280,15 @@ class AllGamesSection extends Component {
                             {currentGames.map((game) => (
                                 <Card
                                     key={game.id}
+                                    onClick={() => navigate(`/game/${game.id}`)}
                                     sx={{
                                         borderRadius: 2,
                                         boxShadow: 3,
                                         display: "flex",
                                         flexDirection: "column",
+                                        cursor: "pointer",
                                         transition: "transform 0.3s, box-shadow 0.3s",
-                                        "&:hover": {
-                                            transform: "scale(1.03)",
-                                            boxShadow: 6,
-                                        },
+                                        "&:hover": { transform: "scale(1.03)", boxShadow: 6 },
                                     }}
                                 >
                                     <CardMedia
@@ -333,4 +336,4 @@ class AllGamesSection extends Component {
     }
 }
 
-export default AllGamesSection;
+export default withRouter(AllGamesSection); 
