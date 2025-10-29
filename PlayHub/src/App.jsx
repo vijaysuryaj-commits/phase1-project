@@ -7,22 +7,37 @@ import SignupPage from "./Pages/SignUpPage.jsx";
 import { AuthProvider } from "./context/AuthContext";
 import RequireAuth from "./utils/RequireAuth.jsx";
 import ProfilePage from "./Pages/ProfilePage.jsx";
-
+import { useState } from "react";
+import { Toolbar } from "@mui/material";
 function App() {
+  const [selectedGenre, setSelectedGenre] = useState(null);
+
   return (
     <AuthProvider>
       <BrowserRouter>
-        <NavBar />
+        <NavBar
+          onGenreSelect={setSelectedGenre}
+          selectedGenre={selectedGenre}
+        />
+        <Toolbar/>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/favorites" element={
-            <RequireAuth>
-              <FavoritesPage />
-            </RequireAuth>} />
-          <Route path="/profile" element={
-            <RequireAuth>
-              <ProfilePage />
-            </RequireAuth>} />
+          <Route path="/" element={<HomePage selectedGenre={selectedGenre} />} />
+          <Route
+            path="/favorites"
+            element={
+              <RequireAuth>
+                <FavoritesPage />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <RequireAuth>
+                <ProfilePage />
+              </RequireAuth>
+            }
+          />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
         </Routes>
@@ -31,4 +46,4 @@ function App() {
   );
 }
 
-export default App;
+export default App

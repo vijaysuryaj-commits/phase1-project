@@ -3,6 +3,8 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import axios from "axios";
+import AllGamesSection from "../Components/AllGamesSection";
+import { NextArrow, PrevArrow } from "../Components/Arrows";
 import {
   Box,
   Typography,
@@ -11,13 +13,19 @@ import {
   CardContent,
   Chip,
   Skeleton,
+  Divider,
+  Button,
+  ButtonGroup,
+  IconButton,
 } from "@mui/material";
+import { FavoriteBorder } from "@mui/icons-material";
 
 class HomePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       popularGames: [],
+      // selectedGenre: null,
       loading: true,
       error: null,
       width: 0,
@@ -28,7 +36,7 @@ class HomePage extends Component {
   componentDidMount() {
     this.setState({ isClient: true, width: window.innerWidth });
     window.addEventListener("resize", this.updateWidth);
-    this.fetchGames();
+    this.fetchPopularGames();
   }
 
   componentWillUnmount() {
@@ -39,7 +47,7 @@ class HomePage extends Component {
     this.setState({ width: window.innerWidth });
   };
 
-  async fetchGames() {
+  async fetchPopularGames() {
     try {
       const response = await axios.get("/api/api/games?sort-by=popularity");
       this.setState({
@@ -47,13 +55,19 @@ class HomePage extends Component {
         loading: false,
       });
     } catch (error) {
-      this.setState({ error: "Failed to load games", loading: false });
+      this.setState({ error: "Failed to load popular games", loading: false });
       console.error(error);
     }
   }
 
+  // handleGenreSelect = (genre) => {
+  //   this.setState({ selectedGenre: genre });
+  // };
+
   render() {
     const { popularGames, loading, error, isClient, width } = this.state;
+
+    if (!isClient) return null;
 
     if (loading)
       return (
@@ -71,15 +85,12 @@ class HomePage extends Component {
             gap={2}
           >
             {[...Array(8)].map((_, i) => (
-              <Box key={i}>
-                <Skeleton
-                  variant="rectangular"
-                  height={180}
-                  sx={{ borderRadius: 2, mb: 1 }}
-                />
-                <Skeleton variant="text" width="80%" />
-                <Skeleton variant="text" width="60%" />
-              </Box>
+              <Skeleton
+                key={i}
+                variant="rectangular"
+                height={180}
+                sx={{ borderRadius: 2 }}
+              />
             ))}
           </Box>
         </Box>
@@ -92,14 +103,11 @@ class HomePage extends Component {
         </Typography>
       );
 
-    if (!isClient) return null; 
-
     const slidesToShow =
       width <= 600 ? 1 : width < 900 ? 2 : width < 1200 ? 3 : 4;
 
     const settings = {
       dots: false,
-      // arrows: width > 600, 
       infinite: true,
       speed: 600,
       slidesToShow,
@@ -107,6 +115,11 @@ class HomePage extends Component {
       autoplay: true,
       autoplaySpeed: 2500,
       pauseOnHover: true,
+      swipe: true,
+      touchMove: true,
+      arrows: true,
+      nextArrow: <NextArrow />,
+      prevArrow: <PrevArrow />,
     };
 
     return (
@@ -123,7 +136,6 @@ class HomePage extends Component {
         <Typography
           variant="h5"
           fontWeight="bold"
-          gutterBottom
           textAlign="center"
           sx={{ mb: 3 }}
         >
@@ -132,12 +144,13 @@ class HomePage extends Component {
 
         <Box
           sx={{
-            "& .slick-slide": {
-              px: { xs: "0px", sm: "8px", md: "12px" },
+            "& .slick-slide": { px: { xs: "0px", sm: "8px", md: "12px" } },
+            "& .slick-list": { overflow: "hidden", mb: 0, pb: 0 },
+            "& .slick-track": {
+              display: "flex !important",
+              alignItems: "stretch",
             },
-            "& .slick-list": {
-              overflow: "hidden",
-            },
+            "& .MuiCard-root": { height: "100%" },
           }}
         >
           <Slider {...settings}>
@@ -147,15 +160,11 @@ class HomePage extends Component {
                   sx={{
                     borderRadius: 2,
                     boxShadow: 3,
-                    height: "100%",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
                     transition: "transform 0.3s, box-shadow 0.3s",
-                    "&:hover": {
-                      transform: "scale(1.04)",
-                      boxShadow: 6,
-                    },
+                    "&:hover": { transform: "scale(1.04)", boxShadow: 6 },
                   }}
                 >
                   <CardMedia
@@ -169,26 +178,49 @@ class HomePage extends Component {
                     }}
                   />
                   <CardContent sx={{ p: { xs: 1.5, sm: 2 } }}>
-                    <Typography
-                      variant="subtitle1"
-                      fontWeight="bold"
-                      noWrap
-                      title={game.title}
-                    >
+                    <Typography variant="subtitle1" fontWeight="bold" noWrap>
                       {game.title}
                     </Typography>
-                    <Chip
-                      label={game.genre}
-                      size="small"
-                      color="primary"
-                      sx={{ mt: 1, fontSize: "0.75rem" }}
-                    />
+                    <Typography
+                      variant="subtitle2"
+                      color="text.secondary"
+                      noWrap
+                    >
+                      Platform: {game.platform}
+                    </Typography>
+                    <Box
+                      display="flex"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Chip
+                        label={game.genre}
+                        size="small"
+                        color="primary"
+                        sx={{ mt: 1, fontSize: "0.75rem" }}
+                      />
+                      <ButtonGroup sx={{ backgroundColor: "lightgrey" }}>
+                        <IconButton>
+                          <FavoriteBorder sx={{ color: "white" }} />
+                        </IconButton>
+                        <Button variant="contained" sx={{ fontWeight: "bold" }}>
+                          Play!
+                        </Button>
+                      </ButtonGroup>
+                    </Box>
                   </CardContent>
                 </Card>
               </Box>
             ))}
           </Slider>
         </Box>
+
+        <Divider
+          sx={{ my: 8, borderColor: "rgba(0,0,0,0.1)" }}
+          variant="middle"
+        />
+
+        <AllGamesSection selectedGenre={this.props.selectedGenre}  />
       </Box>
     );
   }

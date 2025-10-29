@@ -23,16 +23,14 @@ import { useAuth } from "../context/AuthContext";
 
 class NavBar extends Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             showSearchBar: window.innerWidth >= 900 ? true : false,
             drawerOpen: false,
-            selectedGenre: null,
             searchOpen: false,
             anchorEl: null,
-        }
+        };
     }
-
     handleSearchToggle = () => {
         this.setState((prevState) => ({ showSearchBar: !prevState.showSearchBar }))
     }
@@ -52,11 +50,13 @@ class NavBar extends Component {
 
     handleCategorySelect = (name) => {
         let isMobile = window.innerWidth < 900;
+        if (this.props.onGenreSelect) {
+            this.props.onGenreSelect(name); 
+        }
         this.setState({
-            selectedGenre: name,
-            drawerOpen: !isMobile
-        })
-    }
+            drawerOpen: isMobile ? false : true, 
+        });
+    };
 
     handleSearchOpen = () => this.setState({ searchOpen: true })
     handleSearchClose = () => this.setState({ searchOpen: false })
@@ -73,13 +73,13 @@ class NavBar extends Component {
     }
 
     render() {
-        const { auth } = this.props;
         const { anchorEl } = this.state;
+        const { auth, selectedGenre } = this.props;
 
         return (
             <>
                 <AppBar
-                    position='static'
+                    position={scrollY ? 'fixed' : 'absolute'}
                     sx={{
                         padding: '5px',
                         boxShadow: 4,
@@ -189,7 +189,7 @@ class NavBar extends Component {
                             {auth.user ? (
                                 <>
                                     <IconButton onClick={this.handleMenuOpen}>
-                                        <Avatar sx={{ bgcolor: 'secondary.main'}}>
+                                        <Avatar sx={{ bgcolor: 'secondary.main' }}>
                                             {auth.user.username
                                                 ? auth.user.username.charAt(0).toUpperCase()
                                                 : "U"}
@@ -236,7 +236,7 @@ class NavBar extends Component {
                 <SideDrawer
                     open={this.state.drawerOpen}
                     onClose={this.handleDrawerToggle}
-                    selectedGenre={this.state.selectedGenre}
+                    selectedGenre={selectedGenre} 
                     onCategorySelect={this.handleCategorySelect}
                 />
                 <SearchDialog
