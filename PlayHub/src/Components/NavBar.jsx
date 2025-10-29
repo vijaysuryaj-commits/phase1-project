@@ -128,7 +128,7 @@ class NavBar extends Component {
                             />
                             <Typography
                                 variant="h6"
-                                sx={{ fontWeight: "bold", color: "white", ml: 1 }}
+                                sx={{ fontWeight: "bold", color: "orange", ml: 1 }}
                             >
                                 PlayHub
                             </Typography>
@@ -210,12 +210,12 @@ class NavBar extends Component {
                                 sx={{ display: "flex", flexDirection: "row", gap: "5px" }}
                                 onClick={() => this.props.navigate("/favorites")}
                             >
-                                <FavoriteBorderIcon sx={{ color: "white" }} />
+                                <FavoriteBorderIcon sx={{ color: "black" }} />
                                 <Typography
                                     variant="h6"
                                     sx={{
                                         fontWeight: "bold",
-                                        color: "white",
+                                        color: "orange",
                                         ml: 1,
                                         display: { xs: "none", md: "block" },
                                     }}
@@ -263,12 +263,12 @@ class NavBar extends Component {
                                     sx={{ display: "flex", flexDirection: "row", gap: "5px" }}
                                     onClick={() => this.props.navigate("/login")}
                                 >
-                                    <LoginIcon sx={{ color: "white" }} />
+                                    <LoginIcon sx={{ color: "black" }} />
                                     <Typography
                                         variant="h6"
                                         sx={{
                                             fontWeight: "bold",
-                                            color: "white",
+                                            color: "orange",
                                             ml: 1,
                                             display: { xs: "none", md: "block" },
                                         }}

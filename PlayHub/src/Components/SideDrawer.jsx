@@ -185,7 +185,7 @@ class SideDrawer extends Component {
                 onClick={() => onCategorySelect(cat)}
                 sx={{
                   borderLeft:
-                    selectedGenre === cat ? "3px solid #1976d2" : "3px solid transparent",
+                    selectedGenre === cat ? "3px solid orange" : "3px solid transparent",
                   backgroundColor:
                     selectedGenre === cat ? "#2D2D2D" : "transparent",
                   "&:hover": {
@@ -199,7 +199,7 @@ class SideDrawer extends Component {
                   primaryTypographyProps={{
                     fontSize: "0.95rem",
                     fontWeight: selectedGenre === cat ? "bold" : "normal",
-                    color: selectedGenre === cat ? "#1976d2" : "white",
+                    color: selectedGenre === cat ? "orange" : "white",
                   }}
                 />
               </ListItem>

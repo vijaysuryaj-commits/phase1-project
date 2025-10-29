@@ -232,6 +232,9 @@ class HomePage extends Component {
         >
           🎮 Popular Games
         </Typography>
+        <Typography variant="h6" fontWeight={'bold'} textAlign={'center'} sx={{ mb: 3, color: 'orange' }}>
+          A Free Games Discovery Application!
+        </Typography>
 
         <Box
           sx={{
@@ -294,9 +297,10 @@ class HomePage extends Component {
                       />
                       <ButtonGroup sx={{ backgroundColor: "lightgrey" }}>
                         <IconButton>
-                          <FavoriteBorder sx={{ color: "white" }} />
+                          <FavoriteBorder sx={{ color: "black" }} />
                         </IconButton>
-                        <Button variant="contained" sx={{ fontWeight: "bold" }}>
+                        <Button variant="contained" sx={{ fontWeight: "bold" }} href={game.game_url}
+                          target="_blank">
                           Play!
                         </Button>
                       </ButtonGroup>
