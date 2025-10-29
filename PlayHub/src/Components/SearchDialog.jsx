@@ -14,15 +14,28 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 class SearchDialog extends Component {
-  state = { searchValue: "" };
+  state = { searchValue: this.props.value || "" };
 
-  handleChange = (e) => this.setState({ searchValue: e.target.value });
+  componentDidUpdate(prevProps) {
+    if (prevProps.value !== this.props.value) {
+      this.setState({ searchValue: this.props.value || "" });
+    }
+  }
+
+  handleChange = (e) => {
+    const value = e.target.value;
+    this.setState({ searchValue: value });
+    if (this.props.onChange) this.props.onChange(e);
+  };
 
   handleKeyDown = (e) => {
     if (e.key === "Enter") {
       const query = this.state.searchValue.trim();
-      if (query && this.props.onSearch) {
-        this.props.onSearch(query);
+      if (query && this.props.onSearchSubmit) {
+        this.props.onSearchSubmit({
+          key: "Enter",
+          preventDefault: () => {},
+        });
         this.props.onClose();
       }
     }
