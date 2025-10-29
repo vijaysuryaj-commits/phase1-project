@@ -4,13 +4,20 @@ const AuthContext = createContext(null);
 
 export class AuthProvider extends Component {
     state = {
-        users: [],
-        currentUser: null,
+        users: JSON.parse(localStorage.getItem("users")) || [],
+        currentUser: JSON.parse(localStorage.getItem("currentUser")) || null,
         error: null,
     };
 
+    updateLocalStorage = () => {
+        localStorage.setItem("users", JSON.stringify(this.state.users));
+        localStorage.setItem("currentUser", JSON.stringify(this.state.currentUser));
+    };
+
     signup = (username, password) => {
-        const userExists = this.state.users.some((u) => u.username === username);
+        const userExists = this.state.users.some(
+            (u) => u.username.toLowerCase() === username.toLowerCase()
+        );
 
         if (userExists) {
             this.setState({ error: "Username already exists" });
@@ -18,21 +25,25 @@ export class AuthProvider extends Component {
         }
 
         const newUser = { username, password };
-        this.setState((prevState) => ({
-            users: [...prevState.users, newUser],
-            currentUser: newUser,
-            error: null,
-        }));
+        const updatedUsers = [...this.state.users, newUser];
+
+        this.setState(
+            { users: updatedUsers, currentUser: newUser, error: null },
+            this.updateLocalStorage
+        );
+
         return true;
     };
 
     login = (username, password) => {
         const user = this.state.users.find(
-            (u) => u.username === username && u.password === password
+            (u) =>
+                u.username.toLowerCase() === username.toLowerCase() &&
+                u.password === password
         );
 
         if (user) {
-            this.setState({ currentUser: user, error: null });
+            this.setState({ currentUser: user, error: null }, this.updateLocalStorage);
             return true;
         } else {
             this.setState({ error: "Invalid username or password" });
@@ -41,7 +52,7 @@ export class AuthProvider extends Component {
     };
 
     logout = () => {
-        this.setState({ currentUser: null });
+        this.setState({ currentUser: null }, this.updateLocalStorage);
     };
 
     render() {

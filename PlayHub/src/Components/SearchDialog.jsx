@@ -34,7 +34,7 @@ class SearchDialog extends Component {
       if (query && this.props.onSearchSubmit) {
         this.props.onSearchSubmit({
           key: "Enter",
-          preventDefault: () => {},
+          preventDefault: () => { },
         });
         this.props.onClose();
       }

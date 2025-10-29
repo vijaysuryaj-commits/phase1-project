@@ -102,8 +102,14 @@ class HomePage extends Component {
     if (loading)
       return (
         <Box sx={{ padding: { xs: 2, sm: 4, md: 6 } }}>
-          <Typography variant="h5" fontWeight="bold" textAlign="center" mb={3}>
-            🎮 Popular Games
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            textAlign="center"
+            sx={{ color: "orange", textShadow: "0 0 8px orange" }}
+            mb={3}
+          >
+            🎮 Loading Popular Games...
           </Typography>
           <Box
             display="grid"
@@ -119,7 +125,10 @@ class HomePage extends Component {
                 key={i}
                 variant="rectangular"
                 height={180}
-                sx={{ borderRadius: 2 }}
+                sx={{
+                  borderRadius: 2,
+                  backgroundColor: "rgba(255,255,255,0.08)",
+                }}
               />
             ))}
           </Box>
@@ -136,13 +145,18 @@ class HomePage extends Component {
     if (searchQuery)
       return (
         <Box sx={{ p: { xs: 2, sm: 4, md: 6 }, textAlign: "center" }}>
-          <Typography variant="h5" fontWeight="bold" mb={3}>
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            mb={3}
+            sx={{ color: "orange", textShadow: "0 0 8px orange" }}
+          >
             🔍 Search Results for “{searchQuery}”
           </Typography>
           {searching ? (
-            <Typography>Searching...</Typography>
+            <Typography sx={{ color: "white" }}>Searching...</Typography>
           ) : searchResults.length === 0 ? (
-            <Typography>No matches found.</Typography>
+            <Typography sx={{ color: "gray" }}>No matches found.</Typography>
           ) : (
             <Box
               display="grid"
@@ -158,9 +172,17 @@ class HomePage extends Component {
                   key={game.id}
                   sx={{
                     borderRadius: 2,
-                    boxShadow: 3,
+                    background:
+                      "linear-gradient(145deg, rgba(20,20,20,0.8), rgba(40,20,0,0.8))",
+                    backdropFilter: "blur(8px)",
+                    border: "1px solid rgba(255,165,0,0.3)",
+                    boxShadow: "0 0 10px rgba(255,140,0,0.15)",
                     cursor: "pointer",
-                    "&:hover": { transform: "scale(1.03)", boxShadow: 6 },
+                    "&:hover": {
+                      transform: "scale(1.03)",
+                      boxShadow: "0 0 20px rgba(255,165,0,0.4)",
+                    },
+                    transition: "0.3s",
                   }}
                   onClick={() => navigate(`/game/${game.id}`)}
                 >
@@ -168,16 +190,33 @@ class HomePage extends Component {
                     component="img"
                     image={game.thumbnail}
                     alt={game.title}
-                    sx={{ height: 180 }}
+                    sx={{ height: 180, borderRadius: "8px 8px 0 0" }}
                   />
                   <CardContent>
-                    <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight="bold"
+                      noWrap
+                      sx={{ color: "orange" }}
+                    >
                       {game.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap>
+                    <Typography
+                      variant="body2"
+                      color="rgba(255,255,255,0.7)"
+                      noWrap
+                    >
                       {game.platform}
                     </Typography>
-                    <Chip label={game.genre} size="small" color="primary" />
+                    <Chip
+                      label={game.genre}
+                      size="small"
+                      sx={{
+                        mt: 1,
+                        color: "#fff",
+                        backgroundColor: "rgba(255,165,0,0.3)",
+                      }}
+                    />
                   </CardContent>
                 </Card>
               ))}
@@ -186,8 +225,16 @@ class HomePage extends Component {
           <Button
             onClick={clearSearch}
             variant="contained"
-            color="primary"
-            sx={{ mt: 4 }}
+            sx={{
+              mt: 4,
+              backgroundColor: "orange",
+              color: "#000",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#ffb84d",
+                boxShadow: "0 0 15px orange",
+              },
+            }}
           >
             ← Back to Home
           </Button>
@@ -222,17 +269,31 @@ class HomePage extends Component {
           margin: "0 auto",
           overflow: "hidden",
           boxSizing: "border-box",
+          color: "white",
         }}
       >
         <Typography
           variant="h5"
           fontWeight="bold"
           textAlign="center"
-          sx={{ mb: 3 }}
+          sx={{
+            mb: 2,
+            color: "orange",
+            textShadow: "0 0 8px rgba(255,165,0,0.8)",
+          }}
         >
           🎮 Popular Games
         </Typography>
-        <Typography variant="h6" fontWeight={'bold'} textAlign={'center'} sx={{ mb: 3, color: 'orange' }}>
+        <Typography
+          variant="h6"
+          fontWeight="bold"
+          textAlign="center"
+          sx={{
+            mb: 3,
+            color: "#ffb84d",
+            textShadow: "0 0 12px rgba(255,165,0,0.8)",
+          }}
+        >
           A Free Games Discovery Application!
         </Typography>
 
@@ -244,7 +305,6 @@ class HomePage extends Component {
               display: "flex !important",
               alignItems: "stretch",
             },
-            "& .MuiCard-root": { height: "100%" },
           }}
         >
           <Slider {...settings}>
@@ -253,14 +313,21 @@ class HomePage extends Component {
                 <Card
                   onClick={() => navigate(`/game/${game.id}`)}
                   sx={{
-                    borderRadius: 2,
-                    boxShadow: 3,
+                    borderRadius: 3,
+                    background:
+                      "linear-gradient(160deg, rgba(25,20,10,0.7), rgba(10,10,10,0.8))",
+                    backdropFilter: "blur(6px)",
+                    border: "1px solid rgba(255,165,0,0.2)",
+                    boxShadow: "0 0 15px rgba(255,140,0,0.15)",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
                     cursor: "pointer",
-                    transition: "transform 0.3s, box-shadow 0.3s",
-                    "&:hover": { transform: "scale(1.04)", boxShadow: 6 },
+                    transition: "0.3s",
+                    "&:hover": {
+                      transform: "scale(1.04)",
+                      boxShadow: "0 0 25px rgba(255,165,0,0.4)",
+                    },
                   }}
                 >
                   <CardMedia
@@ -271,15 +338,21 @@ class HomePage extends Component {
                       width: "100%",
                       height: { xs: 180, sm: 200, md: 220 },
                       objectFit: "cover",
+                      borderRadius: "8px 8px 0 0",
                     }}
                   />
                   <CardContent sx={{ p: { xs: 1.5, sm: 2 } }}>
-                    <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                    <Typography
+                      variant="subtitle1"
+                      fontWeight="bold"
+                      noWrap
+                      sx={{ color: "orange" }}
+                    >
                       {game.title}
                     </Typography>
                     <Typography
                       variant="subtitle2"
-                      color="text.secondary"
+                      sx={{ color: "rgba(255,255,255,0.7)" }}
                       noWrap
                     >
                       Platform: {game.platform}
@@ -292,16 +365,36 @@ class HomePage extends Component {
                       <Chip
                         label={game.genre}
                         size="small"
-                        color="primary"
-                        sx={{ mt: 1, fontSize: "0.75rem" }}
+                        sx={{
+                          mt: 1,
+                          color: "#fff",
+                          backgroundColor: "rgba(255,165,0,0.3)",
+                        }}
                       />
-                      <ButtonGroup sx={{ backgroundColor: "lightgrey" }}>
+                      <ButtonGroup
+                        sx={{
+                          backgroundColor: "rgba(255,255,255,0.1)",
+                          borderRadius: "8px",
+                        }}
+                      >
                         <IconButton>
-                          <FavoriteBorder sx={{ color: "black" }} />
+                          <FavoriteBorder sx={{ color: "orange" }} />
                         </IconButton>
-                        <Button variant="contained" sx={{ fontWeight: "bold" }} href={game.game_url}
-                          target="_blank">
-                          Play!
+                        <Button
+                          variant="contained"
+                          sx={{
+                            fontWeight: "bold",
+                            backgroundColor: "orange",
+                            color: "#000",
+                            "&:hover": {
+                              backgroundColor: "#ffb84d",
+                              boxShadow: "0 0 10px orange",
+                            },
+                          }}
+                          href={game.game_url}
+                          target="_blank"
+                        >
+                          PLAY!
                         </Button>
                       </ButtonGroup>
                     </Box>
@@ -313,7 +406,11 @@ class HomePage extends Component {
         </Box>
 
         <Divider
-          sx={{ my: 8, borderColor: "rgba(0,0,0,0.1)" }}
+          sx={{
+            my: 8,
+            borderColor: "rgba(255,165,0,0.3)",
+            boxShadow: "0 0 10px rgba(255,165,0,0.3)",
+          }}
           variant="middle"
         />
 

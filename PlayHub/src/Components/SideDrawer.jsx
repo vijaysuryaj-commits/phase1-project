@@ -86,23 +86,24 @@ class SideDrawer extends Component {
       "Sports",
     ];
 
-    const listStyle = {
-      cursor: "pointer",
-      "& .MuiListItemIcon-root": { minWidth: 40, color: "grey.700" },
-    };
-
     return (
       <Drawer
         anchor="left"
         open={open}
         onClose={onClose}
         PaperProps={{
-          sx: { backgroundColor: "#1E1E1E", color: "white" },
+          sx: {
+            background: "rgba(10, 10, 10, 0.85)",
+            backdropFilter: "blur(12px)",
+            color: "#fff",
+            borderRight: "1px solid rgba(255,165,0,0.3)",
+            boxShadow: "0 0 20px rgba(255,140,0,0.15)",
+          },
         }}
       >
         <Box
           sx={{
-            width: { xs: "70vw", sm: "40vw", md: "25vw" },
+            width: { xs: "70vw", sm: "45vw", md: "25vw" },
             display: "flex",
             flexDirection: "column",
             height: "100%",
@@ -115,55 +116,92 @@ class SideDrawer extends Component {
               gap: 1.3,
               justifyContent: "center",
               p: 2,
+              background:
+                "linear-gradient(90deg, rgba(30,20,10,0.4) 0%, rgba(10,10,10,0.7) 100%)",
+              borderBottom: "1px solid rgba(255,165,0,0.2)",
             }}
           >
             <Avatar
               src="https://www.citypng.com/public/uploads/preview/joystick-game-controller-black-icon-png-img-701751695032903jqv8bkyonn.png"
               alt="PlayHub Logo"
-              sx={{ width: 40, height: 40 }}
+              sx={{
+                width: 42,
+                height: 42,
+                border: "2px solid rgba(255,165,0,0.5)",
+                boxShadow: "0 0 10px rgba(255,165,0,0.4)",
+              }}
             />
-            <Typography variant="h6" sx={{ fontWeight: "bold", color: "white" }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: "bold",
+                color: "#FFA500",
+                textShadow: "0 0 10px rgba(255,165,0,0.6)",
+              }}
+            >
               PlayHub
             </Typography>
           </Box>
 
-          <Divider sx={{ borderColor: "rgba(255,255,255,0.2)", mb: 1 }} />
-
-          <List sx={listStyle}>
-            <ListItem onClick={() => this.handleNavigation("/favorites")}>
-              <ListItemIcon>
-                <FavoriteBorderIcon sx={{ color: "white" }} />
+          <List>
+            <ListItem
+              onClick={() => this.handleNavigation("/favorites")}
+              sx={{
+                "&:hover": { backgroundColor: "rgba(255,165,0,0.1)" },
+                transition: "0.3s",
+              }}
+            >
+              <ListItemIcon sx={{ color: "#FFA500" }}>
+                <FavoriteBorderIcon />
               </ListItemIcon>
               <ListItemText primary="Favorites" />
             </ListItem>
 
             {user ? (
               <>
-                <ListItem onClick={() => this.handleNavigation("/profile")}>
-                  <ListItemIcon>
-                    <AccountCircleIcon sx={{ color: "white" }} />
+                <ListItem
+                  onClick={() => this.handleNavigation("/profile")}
+                  sx={{
+                    "&:hover": { backgroundColor: "rgba(255,165,0,0.1)" },
+                    transition: "0.3s",
+                  }}
+                >
+                  <ListItemIcon sx={{ color: "#FFA500" }}>
+                    <AccountCircleIcon />
                   </ListItemIcon>
-                  <ListItemText primary={`Hi, ${user.username}`} />
+                  <ListItemText primary={`Hi, ${user.username.charAt(0).toUpperCase()}${user.username.slice(1)}`} />
                 </ListItem>
 
-                <ListItem onClick={this.handleLogout}>
-                  <ListItemIcon>
-                    <LogoutIcon sx={{ color: "white" }} />
+                <ListItem
+                  onClick={this.handleLogout}
+                  sx={{
+                    "&:hover": { backgroundColor: "rgba(255,0,0,0.1)" },
+                    transition: "0.3s",
+                  }}
+                >
+                  <ListItemIcon sx={{ color: "#FF5555" }}>
+                    <LogoutIcon />
                   </ListItemIcon>
                   <ListItemText primary="Logout" />
                 </ListItem>
               </>
             ) : (
-              <ListItem onClick={() => this.handleNavigation("/login")}>
-                <ListItemIcon>
-                  <LoginIcon sx={{ color: "white" }} />
+              <ListItem
+                onClick={() => this.handleNavigation("/login")}
+                sx={{
+                  "&:hover": { backgroundColor: "rgba(255,165,0,0.1)" },
+                  transition: "0.3s",
+                }}
+              >
+                <ListItemIcon sx={{ color: "#FFA500" }}>
+                  <LoginIcon />
                 </ListItemIcon>
                 <ListItemText primary="Login" />
               </ListItem>
             )}
           </List>
 
-          <Divider sx={{ borderColor: "rgba(255,255,255,0.2)", mt: 1 }} />
+          <Divider sx={{ borderColor: "rgba(255,255,255,0.15)" }} />
 
           <Typography
             variant="subtitle2"
@@ -172,34 +210,45 @@ class SideDrawer extends Component {
               mt: 1,
               mb: 1,
               letterSpacing: 1.5,
-              opacity: 0.7,
+              color: "rgba(255,255,255,0.7)",
             }}
           >
             CATEGORIES
           </Typography>
 
-          <List sx={listStyle}>
+          <List>
             {categories.map((cat) => (
               <ListItem
                 key={cat}
                 onClick={() => onCategorySelect(cat)}
                 sx={{
                   borderLeft:
-                    selectedGenre === cat ? "3px solid orange" : "3px solid transparent",
+                    selectedGenre === cat
+                      ? "3px solid #FFA500"
+                      : "3px solid transparent",
                   backgroundColor:
-                    selectedGenre === cat ? "#2D2D2D" : "transparent",
+                    selectedGenre === cat
+                      ? "rgba(255,165,0,0.1)"
+                      : "transparent",
                   "&:hover": {
-                    backgroundColor: "#2A2A2A",
+                    backgroundColor: "rgba(255,165,0,0.1)",
                   },
+                  transition: "0.3s",
                 }}
               >
-                <ListItemIcon>{this.getCategoryIcon(cat)}</ListItemIcon>
+                <ListItemIcon
+                  sx={{
+                    color: selectedGenre === cat ? "#FFA500" : "rgba(255,255,255,0.8)",
+                  }}
+                >
+                  {this.getCategoryIcon(cat)}
+                </ListItemIcon>
                 <ListItemText
                   primary={cat}
                   primaryTypographyProps={{
                     fontSize: "0.95rem",
                     fontWeight: selectedGenre === cat ? "bold" : "normal",
-                    color: selectedGenre === cat ? "orange" : "white",
+                    color: selectedGenre === cat ? "#FFA500" : "#fff",
                   }}
                 />
               </ListItem>
@@ -210,22 +259,32 @@ class SideDrawer extends Component {
               sx={{
                 borderLeft:
                   selectedGenre === null
-                    ? "3px solid #1976d2"
+                    ? "3px solid #00BFFF"
                     : "3px solid transparent",
                 backgroundColor:
-                  selectedGenre === null ? "#2D2D2D" : "transparent",
+                  selectedGenre === null
+                    ? "rgba(0,191,255,0.1)"
+                    : "transparent",
                 "&:hover": {
-                  backgroundColor: "#2A2A2A",
+                  backgroundColor: "rgba(0,191,255,0.1)",
                 },
+                transition: "0.3s",
               }}
             >
-              <ListItemIcon>{this.getCategoryIcon("All Games")}</ListItemIcon>
+              <ListItemIcon
+                sx={{
+                  color:
+                    selectedGenre === null ? "#00BFFF" : "rgba(255,255,255,0.8)",
+                }}
+              >
+                {this.getCategoryIcon("All Games")}
+              </ListItemIcon>
               <ListItemText
                 primary="All Games"
                 primaryTypographyProps={{
                   fontSize: "0.95rem",
                   fontWeight: selectedGenre === null ? "bold" : "normal",
-                  color: selectedGenre === null ? "#1976d2" : "white",
+                  color: selectedGenre === null ? "#00BFFF" : "#fff",
                 }}
               />
             </ListItem>

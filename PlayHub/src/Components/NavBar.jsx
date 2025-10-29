@@ -32,50 +32,39 @@ class NavBar extends Component {
         };
     }
 
-    handleSearchChange = (e) => {
-        this.setState({ searchTerm: e.target.value });
-    };
+    handleSearchChange = (e) => this.setState({ searchTerm: e.target.value });
 
     handleSearchSubmit = (e) => {
         if (e.key === "Enter" && this.state.searchTerm.trim() !== "") {
             const searchQuery = this.state.searchTerm.trim();
-            if (this.props.onSearch)
-                this.props.onSearch(searchQuery);
+            if (this.props.onSearch) this.props.onSearch(searchQuery);
             this.props.navigate(`/?search=${encodeURIComponent(searchQuery)}`);
             this.setState({ searchOpen: false });
         }
     };
 
-    handleSearchToggle = () => {
+    handleSearchToggle = () =>
         this.setState((prev) => ({ showSearchBar: !prev.showSearchBar }));
-    };
 
-    handleDrawerToggle = () => {
+    handleDrawerToggle = () =>
         this.setState((prev) => ({ drawerOpen: !prev.drawerOpen }));
-    };
 
     handleResize = () => {
         const isDeskTop = window.innerWidth >= 900;
-        if (isDeskTop && !this.state.showSearchBar) {
+        if (isDeskTop && !this.state.showSearchBar)
             this.setState({ showSearchBar: true });
-        } else if (!isDeskTop && this.state.showSearchBar) {
+        else if (!isDeskTop && this.state.showSearchBar)
             this.setState({ showSearchBar: false });
-        }
     };
 
     handleCategorySelect = (name) => {
         let isMobile = window.innerWidth < 900;
-        if (this.props.onGenreSelect) {
-            this.props.onGenreSelect(name);
-        }
-        this.setState({
-            drawerOpen: isMobile ? false : true,
-        });
+        if (this.props.onGenreSelect) this.props.onGenreSelect(name);
+        this.setState({ drawerOpen: isMobile ? false : true });
     };
 
     handleSearchOpen = () => this.setState({ searchOpen: true });
     handleSearchClose = () => this.setState({ searchOpen: false });
-
     handleMenuOpen = (event) => this.setState({ anchorEl: event.currentTarget });
     handleMenuClose = () => this.setState({ anchorEl: null });
 
@@ -96,10 +85,12 @@ class NavBar extends Component {
                 <AppBar
                     position="fixed"
                     sx={{
-                        padding: "5px",
-                        boxShadow: 4,
-                        borderRadius: "0 0 8px 8px",
-                        backgroundColor: "lightgray",
+                        padding: "6px 0",
+                        boxShadow: "0 0 20px rgba(255, 100, 0, 0.4)",
+                        borderBottom: "1px solid rgba(255, 100, 0, 0.3)",
+                        background:
+                            "linear-gradient(90deg, rgba(20,20,20,0.85) 0%, rgba(30,10,10,0.85) 100%)",
+                        backdropFilter: "blur(8px)",
                     }}
                 >
                     <Toolbar
@@ -118,17 +109,27 @@ class NavBar extends Component {
                             }}
                             onClick={() => this.props.navigate("/")}
                         >
-                            <IconButton onClick={this.handleDrawerToggle}>
+                            <IconButton onClick={this.handleDrawerToggle} sx={{ color: "orange" }}>
                                 <MenuIcon />
                             </IconButton>
                             <Avatar
                                 src="https://www.citypng.com/public/uploads/preview/joystick-game-controller-black-icon-png-img-701751695032903jqv8bkyonn.png"
                                 alt="PlayHub Logo"
-                                sx={{ width: 40, height: 40 }}
+                                sx={{
+                                    width: 42,
+                                    height: 42,
+                                    border: "2px solid rgba(255,165,0,0.5)",
+                                    boxShadow: "0 0 10px rgba(255,165,0,0.5)",
+                                }}
                             />
                             <Typography
                                 variant="h6"
-                                sx={{ fontWeight: "bold", color: "orange", ml: 1 }}
+                                sx={{
+                                    fontWeight: "bold",
+                                    color: "orange",
+                                    ml: 1.2,
+                                    textShadow: "0 0 10px rgba(255,140,0,0.8)",
+                                }}
                             >
                                 PlayHub
                             </Typography>
@@ -159,14 +160,10 @@ class NavBar extends Component {
                                                     {this.state.showSearchBar &&
                                                         window.innerWidth < 900 ? (
                                                         <IconButton onClick={this.handleSearchToggle}>
-                                                            <CloseIcon
-                                                                sx={{ color: "gray", fontSize: "1.3rem" }}
-                                                            />
+                                                            <CloseIcon sx={{ color: "orange" }} />
                                                         </IconButton>
                                                     ) : (
-                                                        <SearchIcon
-                                                            sx={{ color: "gray", fontSize: "1.35rem" }}
-                                                        />
+                                                        <SearchIcon sx={{ color: "orange" }} />
                                                     )}
                                                 </InputAdornment>
                                             ),
@@ -174,10 +171,19 @@ class NavBar extends Component {
                                         sx={{
                                             width: { xs: "100%", sm: "70%", md: "50%" },
                                             borderRadius: "40px",
-                                            backgroundColor: "white",
+                                            backgroundColor: "rgba(255,255,255,0.08)",
+                                            backdropFilter: "blur(4px)",
+                                            "& input": { color: "#fff" },
                                             "& .MuiOutlinedInput-root": {
                                                 borderRadius: "40px",
-                                                "& fieldset": { borderColor: "transparent" },
+                                                "& fieldset": { borderColor: "rgba(255,165,0,0.4)" },
+                                                "&:hover fieldset": {
+                                                    borderColor: "rgba(255,165,0,0.8)",
+                                                },
+                                                "&.Mui-focused fieldset": {
+                                                    borderColor: "orange",
+                                                    boxShadow: "0 0 10px orange",
+                                                },
                                             },
                                         }}
                                     />
@@ -186,7 +192,7 @@ class NavBar extends Component {
                                 <IconButton
                                     onClick={this.handleSearchOpen}
                                     sx={{
-                                        color: "white",
+                                        color: "orange",
                                         display: { xs: "block", md: "none" },
                                         transform: "scale(1.1)",
                                     }}
@@ -210,7 +216,9 @@ class NavBar extends Component {
                                 sx={{ display: "flex", flexDirection: "row", gap: "5px" }}
                                 onClick={() => this.props.navigate("/favorites")}
                             >
-                                <FavoriteBorderIcon sx={{ color: "black" }} />
+                                <FavoriteBorderIcon
+                                    sx={{ color: "orange", textShadow: "0 0 10px orange" }}
+                                />
                                 <Typography
                                     variant="h6"
                                     sx={{
@@ -218,6 +226,7 @@ class NavBar extends Component {
                                         color: "orange",
                                         ml: 1,
                                         display: { xs: "none", md: "block" },
+                                        textShadow: "0 0 8px rgba(255,165,0,0.8)",
                                     }}
                                 >
                                     Favorites
@@ -227,7 +236,13 @@ class NavBar extends Component {
                             {auth.user ? (
                                 <>
                                     <IconButton onClick={this.handleMenuOpen}>
-                                        <Avatar sx={{ bgcolor: "secondary.main" }}>
+                                        <Avatar
+                                            sx={{
+                                                bgcolor: "rgba(255,165,0,0.2)",
+                                                color: "orange",
+                                                border: "1px solid rgba(255,165,0,0.5)",
+                                            }}
+                                        >
                                             {auth.user.username
                                                 ? auth.user.username.charAt(0).toUpperCase()
                                                 : "U"}
@@ -238,6 +253,13 @@ class NavBar extends Component {
                                         anchorEl={anchorEl}
                                         open={Boolean(anchorEl)}
                                         onClose={this.handleMenuClose}
+                                        PaperProps={{
+                                            sx: {
+                                                backgroundColor: "rgba(20,20,20,0.95)",
+                                                color: "white",
+                                                border: "1px solid rgba(255,165,0,0.3)",
+                                            },
+                                        }}
                                     >
                                         <MenuItem
                                             onClick={() => {
@@ -263,7 +285,7 @@ class NavBar extends Component {
                                     sx={{ display: "flex", flexDirection: "row", gap: "5px" }}
                                     onClick={() => this.props.navigate("/login")}
                                 >
-                                    <LoginIcon sx={{ color: "black" }} />
+                                    <LoginIcon sx={{ color: "orange" }} />
                                     <Typography
                                         variant="h6"
                                         sx={{
@@ -271,6 +293,7 @@ class NavBar extends Component {
                                             color: "orange",
                                             ml: 1,
                                             display: { xs: "none", md: "block" },
+                                            textShadow: "0 0 8px rgba(255,140,0,0.8)",
                                         }}
                                     >
                                         Login

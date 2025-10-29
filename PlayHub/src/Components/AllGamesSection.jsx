@@ -53,14 +53,12 @@ class AllGamesSection extends Component {
 
     async fetchGames() {
         this.setState({ loading: true, error: null });
-
         try {
             let url = "/api/api/games";
             const params = [];
 
             const { selectedGenre } = this.props;
             const { sortBy, platform, selectedCategory } = this.state;
-
             const finalCategory = selectedGenre || selectedCategory;
 
             if (finalCategory)
@@ -86,26 +84,12 @@ class AllGamesSection extends Component {
         }
     }
 
-    handleFilterMenuOpen = (event) => {
-        this.setState({ anchorEl: event.currentTarget });
-    };
-
-    handleFilterMenuClose = () => {
-        this.setState({ anchorEl: null });
-    };
-
-    handleSortChange = (event) => {
-        this.setState({ sortBy: event.target.value, currentPage: 1 });
-    };
-
-    handlePlatformChange = (event) => {
-        this.setState({ platform: event.target.value, currentPage: 1 });
-    };
-
-    handleCategoryChange = (event) => {
+    handleFilterMenuOpen = (event) => this.setState({ anchorEl: event.currentTarget });
+    handleFilterMenuClose = () => this.setState({ anchorEl: null });
+    handleSortChange = (event) => this.setState({ sortBy: event.target.value, currentPage: 1 });
+    handlePlatformChange = (event) => this.setState({ platform: event.target.value, currentPage: 1 });
+    handleCategoryChange = (event) =>
         this.setState({ selectedCategory: event.target.value, currentPage: 1 });
-    };
-
     handlePageChange = (event, value) => {
         this.setState({ currentPage: value });
         const el = document.getElementById("all-games-section");
@@ -156,12 +140,21 @@ class AllGamesSection extends Component {
                     mt: { xs: 3, sm: 3, md: 4 },
                     px: { xs: 2, sm: 4, md: 6 },
                     textAlign: "center",
+                    color: "white",
                 }}
             >
-                <Typography variant="h5" fontWeight="bold" gutterBottom>
+
+                <Typography
+                    variant="h5"
+                    fontWeight="bold"
+                    gutterBottom
+                    sx={{
+                        color: "orange",
+                        textShadow: "0 0 10px rgba(255,165,0,0.8)",
+                    }}
+                >
                     🎯 {this.props.selectedGenre || "All Games"}
                 </Typography>
-
 
                 <Box display="flex" justifyContent="center" mb={4}>
                     <Button
@@ -172,11 +165,16 @@ class AllGamesSection extends Component {
                             borderRadius: "8px",
                             textTransform: "none",
                             fontWeight: 600,
+                            backgroundColor: "orange",
+                            color: "#000",
+                            "&:hover": {
+                                backgroundColor: "#ffb84d",
+                                boxShadow: "0 0 15px orange",
+                            },
                         }}
                     >
                         Filters
                     </Button>
-
 
                     <Menu
                         anchorEl={anchorEl}
@@ -187,26 +185,39 @@ class AllGamesSection extends Component {
                                 minWidth: 280,
                                 borderRadius: 2,
                                 p: 2,
-                                backgroundColor: "#fff",
-                                boxShadow: "0px 4px 18px rgba(0,0,0,0.15)",
+                                background:
+                                    "linear-gradient(145deg, rgba(30,30,30,0.95), rgba(50,20,0,0.9))",
+                                color: "white",
+                                border: "1px solid rgba(255,165,0,0.3)",
+                                boxShadow: "0 0 20px rgba(255,165,0,0.3)",
+                                backdropFilter: "blur(8px)",
                             },
                         }}
                     >
                         <Typography
                             variant="subtitle1"
                             fontWeight="bold"
-                            sx={{ mb: 1, textAlign: "center" }}
+                            sx={{ mb: 1, textAlign: "center", color: "orange" }}
                         >
                             Filter Options
                         </Typography>
-                        <Divider sx={{ mb: 2 }} />
+                        <Divider sx={{ mb: 2, borderColor: "rgba(255,165,0,0.3)" }} />
 
                         <FormControl fullWidth sx={{ mb: 2 }}>
-                            <InputLabel>Category</InputLabel>
+                            <InputLabel sx={{ color: "orange" }}>Category</InputLabel>
                             <Select
                                 value={selectedCategory}
                                 label="Category"
                                 onChange={this.handleCategoryChange}
+                                sx={{
+                                    color: "white",
+                                    "& .MuiOutlinedInput-notchedOutline": {
+                                        borderColor: "rgba(255,165,0,0.4)",
+                                    },
+                                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                                        borderColor: "orange",
+                                    },
+                                }}
                             >
                                 <MenuItem value="">All Categories</MenuItem>
                                 {categories.map((cat) => (
@@ -218,11 +229,20 @@ class AllGamesSection extends Component {
                         </FormControl>
 
                         <FormControl fullWidth sx={{ mb: 2 }}>
-                            <InputLabel>Platform</InputLabel>
+                            <InputLabel sx={{ color: "orange" }}>Platform</InputLabel>
                             <Select
                                 value={platform}
                                 label="Platform"
                                 onChange={this.handlePlatformChange}
+                                sx={{
+                                    color: "white",
+                                    "& .MuiOutlinedInput-notchedOutline": {
+                                        borderColor: "rgba(255,165,0,0.4)",
+                                    },
+                                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                                        borderColor: "orange",
+                                    },
+                                }}
                             >
                                 <MenuItem value="">All Platforms</MenuItem>
                                 <MenuItem value="pc">PC</MenuItem>
@@ -231,11 +251,20 @@ class AllGamesSection extends Component {
                         </FormControl>
 
                         <FormControl fullWidth>
-                            <InputLabel>Sort By</InputLabel>
+                            <InputLabel sx={{ color: "orange" }}>Sort By</InputLabel>
                             <Select
                                 value={sortBy}
                                 label="Sort By"
                                 onChange={this.handleSortChange}
+                                sx={{
+                                    color: "white",
+                                    "& .MuiOutlinedInput-notchedOutline": {
+                                        borderColor: "rgba(255,165,0,0.4)",
+                                    },
+                                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                                        borderColor: "orange",
+                                    },
+                                }}
                             >
                                 <MenuItem value="release-date">Release Date</MenuItem>
                                 <MenuItem value="popularity">Popularity</MenuItem>
@@ -260,7 +289,10 @@ class AllGamesSection extends Component {
                                 key={i}
                                 variant="rectangular"
                                 height={220}
-                                sx={{ borderRadius: 2 }}
+                                sx={{
+                                    borderRadius: 2,
+                                    backgroundColor: "rgba(255,255,255,0.08)",
+                                }}
                             />
                         ))}
                     </Box>
@@ -282,13 +314,20 @@ class AllGamesSection extends Component {
                                     key={game.id}
                                     onClick={() => navigate(`/game/${game.id}`)}
                                     sx={{
-                                        borderRadius: 2,
-                                        boxShadow: 3,
+                                        borderRadius: 3,
+                                        background:
+                                            "linear-gradient(160deg, rgba(25,20,10,0.7), rgba(10,10,10,0.8))",
+                                        backdropFilter: "blur(6px)",
+                                        border: "1px solid rgba(255,165,0,0.2)",
+                                        boxShadow: "0 0 15px rgba(255,140,0,0.15)",
                                         display: "flex",
                                         flexDirection: "column",
                                         cursor: "pointer",
-                                        transition: "transform 0.3s, box-shadow 0.3s",
-                                        "&:hover": { transform: "scale(1.03)", boxShadow: 6 },
+                                        transition: "0.3s",
+                                        "&:hover": {
+                                            transform: "scale(1.04)",
+                                            boxShadow: "0 0 25px rgba(255,165,0,0.4)",
+                                        },
                                     }}
                                 >
                                     <CardMedia
@@ -299,20 +338,33 @@ class AllGamesSection extends Component {
                                             width: "100%",
                                             height: 180,
                                             objectFit: "cover",
+                                            borderRadius: "8px 8px 0 0",
                                         }}
                                     />
                                     <CardContent>
-                                        <Typography variant="subtitle1" fontWeight="bold" noWrap>
+                                        <Typography
+                                            variant="subtitle1"
+                                            fontWeight="bold"
+                                            noWrap
+                                            sx={{ color: "orange" }}
+                                        >
                                             {game.title}
                                         </Typography>
-                                        <Typography variant="body2" color="text.secondary" noWrap>
+                                        <Typography
+                                            variant="body2"
+                                            sx={{ color: "rgba(255,255,255,0.7)" }}
+                                            noWrap
+                                        >
                                             {game.platform}
                                         </Typography>
                                         <Chip
                                             label={game.genre}
                                             size="small"
-                                            color="primary"
-                                            sx={{ mt: 1 }}
+                                            sx={{
+                                                mt: 1,
+                                                color: "#fff",
+                                                backgroundColor: "rgba(255,165,0,0.3)",
+                                            }}
                                         />
                                     </CardContent>
                                 </Card>
@@ -325,7 +377,15 @@ class AllGamesSection extends Component {
                                     count={totalPages}
                                     page={currentPage}
                                     onChange={this.handlePageChange}
-                                    color="primary"
+                                    sx={{
+                                        "& .MuiPaginationItem-root": {
+                                            color: "white",
+                                            "&.Mui-selected": {
+                                                backgroundColor: "orange",
+                                                color: "#000",
+                                            },
+                                        },
+                                    }}
                                 />
                             </Box>
                         )}
@@ -336,4 +396,4 @@ class AllGamesSection extends Component {
     }
 }
 
-export default withRouter(AllGamesSection); 
+export default withRouter(AllGamesSection);
