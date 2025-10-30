@@ -33,8 +33,26 @@ class SignupPage extends Component {
   handleSignup = () => {
     const { username, password, confirmPassword } = this.state;
 
-    if (!username || !password) {
+    if (!username || !password || !confirmPassword) {
       this.setState({ error: "Please fill all fields" });
+      return;
+    }
+
+    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+    if (!usernameRegex.test(username)) {
+      this.setState({
+        error: "Username must be between 3-20 characters and contain no spaces",
+      });
+      return;
+    }
+
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    if (!passwordRegex.test(password)) {
+      this.setState({
+        error:
+          "Password must be at least 6 characters long, contain at least one uppercase, one lowercase, one number, and one special character",
+      });
       return;
     }
 

@@ -31,6 +31,7 @@ class LoginPage extends Component {
 
   handleLogin = () => {
     const { username, password } = this.state;
+
     if (!username || !password) {
       this.setState({ error: "Please fill in all fields." });
       return;

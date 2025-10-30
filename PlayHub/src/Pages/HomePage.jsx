@@ -55,6 +55,12 @@ class HomePage extends Component {
         this.fetchSearchResults(this.props.searchQuery);
       else this.setState({ searchResults: [] });
     }
+    if (prevProps.selectedGenre !== this.props.selectedGenre && this.props.selectedGenre) {
+      const el = document.getElementById("all-games-section");
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
   }
 
   updateWidth = () => this.setState({ width: window.innerWidth });
@@ -414,7 +420,7 @@ class HomePage extends Component {
           variant="middle"
         />
 
-        <AllGamesSection selectedGenre={selectedGenre} />
+        <AllGamesSection selectedGenre={selectedGenre} onCategorySelect={(category) => this.setState({ selectedGenre: category })} />
       </Box>
     );
   }

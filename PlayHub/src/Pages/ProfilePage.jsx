@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import { Paper, Stack, Avatar, Typography, Button } from "@mui/material";
+import {  Avatar, Typography, Button, Box} from "@mui/material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-
 
 function withAuthAndNavigate(Component) {
   return function WrappedComponent(props) {
@@ -22,45 +21,69 @@ class ProfilePage extends Component {
     const { user } = this.props.auth;
 
     return (
-      <Paper
-        elevation={3}
+      <Box
         sx={{
-          maxWidth: 400,
+          maxWidth: "1000px",
           margin: "80px auto",
-          padding: 4,
-          textAlign: "center",
+          padding: 3,
+          display: "flex",
+          flexDirection: "row",
+          backgroundColor: "rgba(10,10,10,0.85)",
+          borderRadius: 2,
+          boxShadow: "0 0 15px rgba(255, 165, 0, 0.4)",
         }}
       >
-        <Stack spacing={3} alignItems="center">
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mr: 3 }}>
           <Avatar
             sx={{
               bgcolor: "primary.main",
-              width: 80,
-              height: 80,
-              fontSize: "2rem",
+              width: 120,
+              height: 120,
+              fontSize: "3rem",
+              border: "2px solid rgba(255, 165, 0, 0.5)",
+              boxShadow: "0 0 10px rgba(255,165,0,0.5)",
             }}
           >
             {user?.username?.charAt(0).toUpperCase() || "U"}
           </Avatar>
+        </Box>
 
-          <Typography variant="h5" fontWeight="bold">
+        <Box sx={{ flex: 1 }}>
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            sx={{
+              color: "orange",
+              textShadow: "0 0 8px rgba(255, 165, 0, 0.8)",
+              mb: 2,
+            }}
+          >
             {user?.username || "Unknown User"}
           </Typography>
 
-          <Typography variant="body1" color="text.secondary">
-            Welcome back, {user?.username || "Guest"} 👋
+          <Typography variant="body1" sx={{ color: "white", mb: 2 }}>
+            Welcome back, {user?.username.charAt(0).toUpperCase() + user?.username.slice(1) || "Guest"} 👋
           </Typography>
 
           <Button
             variant="contained"
             color="error"
             onClick={this.handleLogout}
-            sx={{ mt: 2 }}
+            sx={{
+              mt: 3,
+              backgroundColor: "rgba(255, 0, 0, 0.75)",
+              color: "#fff",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#ff4d4d",
+                boxShadow: "0 0 15px rgba(255, 0, 0, 0.4)",
+              },
+            }}
           >
             Logout
           </Button>
-        </Stack>
-      </Paper>
+        </Box>
+      </Box>
     );
   }
 }

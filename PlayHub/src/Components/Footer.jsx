@@ -11,7 +11,6 @@ class Footer extends Component {
             fontWeight: "400",
             letterSpacing: "0.5px",
             borderTop: "2px solid #333",
-            position: "fixed",
             bottom: 0,
             left: 0,
             width: "100%",
