@@ -53,7 +53,6 @@ class GameDetails extends Component {
 
         if (!game) return null;
 
-        // Handle long description
         const MAX_LENGTH = 350;
         const isLong = game.description && game.description.length > MAX_LENGTH;
         const displayText = showFullDescription

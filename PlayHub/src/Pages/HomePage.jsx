@@ -21,6 +21,15 @@ import {
 } from "@mui/material";
 import { FavoriteBorder } from "@mui/icons-material";
 import { withRouter } from "../Helpers/withRouter";
+import { useAuth } from "../context/AuthContext";
+
+function withAuth(Component) {
+  return function WrappedComponent(props) {
+    const auth = useAuth();
+    return <Component {...props} auth={auth} />;
+  };
+}
+
 
 class HomePage extends Component {
   constructor(props) {
@@ -404,9 +413,29 @@ class HomePage extends Component {
                           borderRadius: "8px",
                         }}
                       >
-                        <IconButton>
-                          <FavoriteBorder sx={{ color: "orange" }} />
+                        <IconButton
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const { user, toggleFavorite } = this.props.auth;
+
+                            if (!user) {
+                              alert("Please log in to add favorites!");
+                              return;
+                            }
+
+                            toggleFavorite(game.id);
+                          }}
+                        >
+                          <FavoriteBorder
+                            sx={{
+                              color: this.props.auth.user?.favorites?.includes(game.id)
+                                ? "red"
+                                : "orange",
+                              transition: "color 0.3s ease",
+                            }}
+                          />
                         </IconButton>
+
                         <Button
                           variant="contained"
                           sx={{
@@ -447,4 +476,4 @@ class HomePage extends Component {
   }
 }
 
-export default withRouter(HomePage);
+export default withAuth(withRouter(HomePage));
