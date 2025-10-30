@@ -5,6 +5,7 @@ import Slider from "react-slick";
 import axios from "axios";
 import AllGamesSection from "../Components/AllGamesSection";
 import { NextArrow, PrevArrow } from "../Components/Arrows";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {
   Box,
   Typography,
@@ -32,6 +33,7 @@ class HomePage extends Component {
       error: null,
       width: 0,
       isClient: false,
+
     };
   }
 
@@ -150,101 +152,120 @@ class HomePage extends Component {
 
     if (searchQuery)
       return (
-        <Box sx={{ p: { xs: 2, sm: 4, md: 6 }, textAlign: "center" }}>
-          <Typography
-            variant="h5"
-            fontWeight="bold"
-            mb={3}
-            sx={{ color: "orange", textShadow: "0 0 8px orange" }}
-          >
-            🔍 Search Results for “{searchQuery}”
-          </Typography>
-          {searching ? (
-            <Typography sx={{ color: "white" }}>Searching...</Typography>
-          ) : searchResults.length === 0 ? (
-            <Typography sx={{ color: "gray" }}>No matches found.</Typography>
-          ) : (
-            <Box
-              display="grid"
-              gridTemplateColumns={{
-                xs: "1fr",
-                sm: "repeat(2, 1fr)",
-                md: "repeat(4, 1fr)",
-              }}
-              gap={2}
-            >
-              {searchResults.map((game) => (
-                <Card
-                  key={game.id}
-                  sx={{
-                    borderRadius: 2,
-                    background:
-                      "linear-gradient(145deg, rgba(20,20,20,0.8), rgba(40,20,0,0.8))",
-                    backdropFilter: "blur(8px)",
-                    border: "1px solid rgba(255,165,0,0.3)",
-                    boxShadow: "0 0 10px rgba(255,140,0,0.15)",
-                    cursor: "pointer",
-                    "&:hover": {
-                      transform: "scale(1.03)",
-                      boxShadow: "0 0 20px rgba(255,165,0,0.4)",
-                    },
-                    transition: "0.3s",
-                  }}
-                  onClick={() => navigate(`/game/${game.id}`)}
-                >
-                  <CardMedia
-                    component="img"
-                    image={game.thumbnail}
-                    alt={game.title}
-                    sx={{ height: 180, borderRadius: "8px 8px 0 0" }}
-                  />
-                  <CardContent>
-                    <Typography
-                      variant="subtitle1"
-                      fontWeight="bold"
-                      noWrap
-                      sx={{ color: "orange" }}
-                    >
-                      {game.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="rgba(255,255,255,0.7)"
-                      noWrap
-                    >
-                      {game.platform}
-                    </Typography>
-                    <Chip
-                      label={game.genre}
-                      size="small"
-                      sx={{
-                        mt: 1,
-                        color: "#fff",
-                        backgroundColor: "rgba(255,165,0,0.3)",
-                      }}
-                    />
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
-          )}
+        <>
           <Button
+            startIcon={<ArrowBackIcon />}
             onClick={clearSearch}
-            variant="contained"
             sx={{
-              mt: 4,
-              backgroundColor: "orange",
-              color: "#000",
+              mb: 3,
               fontWeight: "bold",
-              "&:hover": {
-                backgroundColor: "#ffb84d",
-                boxShadow: "0 0 15px orange",
-              },
+              fontSize: { sm: "16px", md: "24px" },
+              textTransform: "none",
+              color: "orange",
+              "&:hover": { color: "#ffb74d" },
             }}
           >
-            ← Back to Home
+            Back
           </Button>
-        </Box>
+          <Box sx={{ p: { xs: 2, sm: 4, md: 6 }, textAlign: "center" }}>
+
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              mb={3}
+              sx={{ color: "orange", textShadow: "0 0 8px orange" }}
+            >
+              🔍 Search Results for “{searchQuery}”
+            </Typography>
+
+            {searching ? (
+              <Typography sx={{ color: "white" }}>Searching...</Typography>
+            ) : searchResults.length === 0 ? (
+              <Typography sx={{ color: "gray" }}>No matches found.</Typography>
+            ) : (
+              <Box
+                display="grid"
+                gridTemplateColumns={{
+                  xs: "1fr",
+                  sm: "repeat(2, 1fr)",
+                  md: "repeat(4, 1fr)",
+                }}
+                gap={2}
+              >
+                {searchResults.map((game) => (
+                  <Card
+                    key={game.id}
+                    sx={{
+                      borderRadius: 2,
+                      background:
+                        "linear-gradient(145deg, rgba(20,20,20,0.8), rgba(40,20,0,0.8))",
+                      backdropFilter: "blur(8px)",
+                      border: "1px solid rgba(255,165,0,0.3)",
+                      boxShadow: "0 0 10px rgba(255,140,0,0.15)",
+                      cursor: "pointer",
+                      "&:hover": {
+                        transform: "scale(1.03)",
+                        boxShadow: "0 0 20px rgba(255,165,0,0.4)",
+                      },
+                      transition: "0.3s",
+                    }}
+                    onClick={() => navigate(`/game/${game.id}`)}
+                  >
+                    <CardMedia
+                      component="img"
+                      image={game.thumbnail}
+                      alt={game.title}
+                      sx={{ height: 180, borderRadius: "8px 8px 0 0" }}
+                    />
+                    <CardContent>
+                      <Typography
+                        variant="subtitle1"
+                        fontWeight="bold"
+                        noWrap
+                        sx={{ color: "orange" }}
+                      >
+                        {game.title}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="rgba(255,255,255,0.7)"
+                        noWrap
+                      >
+                        {game.platform}
+                      </Typography>
+                      <Chip
+                        label={game.genre}
+                        size="small"
+                        sx={{
+                          mt: 1,
+                          color: "#fff",
+                          backgroundColor: "rgba(255,165,0,0.3)",
+                        }}
+                      />
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
+            )}
+            <Button
+              startIcon={<ArrowBackIcon />}
+              onClick={clearSearch}
+              variant="contained"
+              sx={{
+                mt: 4,
+                backgroundColor: "orange",
+                color: "#000",
+                fontWeight: "bold",
+                "&:hover": {
+                  backgroundColor: "#ffb84d",
+                  boxShadow: "0 0 15px orange",
+                },
+              }}
+            >
+              Back
+            </Button>
+          </Box>
+        </>
       );
 
     const slidesToShow =

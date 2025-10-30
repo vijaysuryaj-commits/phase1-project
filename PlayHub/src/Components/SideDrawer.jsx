@@ -149,6 +149,7 @@ class SideDrawer extends Component {
               sx={{
                 "&:hover": { backgroundColor: "rgba(255,165,0,0.1)" },
                 transition: "0.3s",
+                cursor:'pointer'
               }}
             >
               <ListItemIcon sx={{ color: "#FFA500" }}>
@@ -164,6 +165,7 @@ class SideDrawer extends Component {
                   sx={{
                     "&:hover": { backgroundColor: "rgba(255,165,0,0.1)" },
                     transition: "0.3s",
+                    cursor:'pointer'
                   }}
                 >
                   <ListItemIcon sx={{ color: "#FFA500" }}>
@@ -177,6 +179,7 @@ class SideDrawer extends Component {
                   sx={{
                     "&:hover": { backgroundColor: "rgba(255,0,0,0.1)" },
                     transition: "0.3s",
+                    cursor:'pointer'
                   }}
                 >
                   <ListItemIcon sx={{ color: "#FF5555" }}>
@@ -191,6 +194,7 @@ class SideDrawer extends Component {
                 sx={{
                   "&:hover": { backgroundColor: "rgba(255,165,0,0.1)" },
                   transition: "0.3s",
+                  cursor:'pointer'
                 }}
               >
                 <ListItemIcon sx={{ color: "#FFA500" }}>
@@ -234,6 +238,7 @@ class SideDrawer extends Component {
                     backgroundColor: "rgba(255,165,0,0.1)",
                   },
                   transition: "0.3s",
+                  cursor:'pointer'
                 }}
               >
                 <ListItemIcon
@@ -269,6 +274,7 @@ class SideDrawer extends Component {
                   backgroundColor: "rgba(0,191,255,0.1)",
                 },
                 transition: "0.3s",
+                cursor:'pointer'
               }}
             >
               <ListItemIcon

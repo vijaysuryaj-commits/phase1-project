@@ -14,7 +14,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { withRouter } from "../Helpers/withRouter";
 
 class GameDetails extends Component {
-    state = { game: null, loading: true, error: null };
+    state = { game: null, loading: true, error: null, showFullDescription: false };
 
     async componentDidMount() {
         const { id } = this.props.params;
@@ -30,8 +30,12 @@ class GameDetails extends Component {
         this.props.navigate(-1);
     };
 
+    toggleDescription = () => {
+        this.setState((prev) => ({ showFullDescription: !prev.showFullDescription }));
+    };
+
     render() {
-        const { game, loading, error } = this.state;
+        const { game, loading, error, showFullDescription } = this.state;
 
         if (loading)
             return (
@@ -48,6 +52,13 @@ class GameDetails extends Component {
             );
 
         if (!game) return null;
+
+        // Handle long description
+        const MAX_LENGTH = 350;
+        const isLong = game.description && game.description.length > MAX_LENGTH;
+        const displayText = showFullDescription
+            ? game.description
+            : game.description?.substring(0, MAX_LENGTH) + (isLong ? "..." : "");
 
         return (
             <Box
@@ -66,7 +77,7 @@ class GameDetails extends Component {
                     sx={{
                         mb: 3,
                         fontWeight: "bold",
-                        fontSize: { sm: '16px', md: '24px' },
+                        fontSize: { sm: "16px", md: "24px" },
                         textTransform: "none",
                         color: "orange",
                         "&:hover": { color: "#ffb74d" },
@@ -84,9 +95,9 @@ class GameDetails extends Component {
                         color: "white",
                         display: "flex",
                         flexDirection: { xs: "column", md: "row" },
-                        alignItems: 'center',
+                        alignItems: "center",
                         overflow: "hidden",
-                        p: 2
+                        p: 2,
                     }}
                 >
                     <CardMedia
@@ -144,12 +155,27 @@ class GameDetails extends Component {
                             variant="body1"
                             sx={{
                                 color: "rgba(255,255,255,0.85)",
-                                mb: 3,
+                                mb: 1,
                                 lineHeight: 1.6,
                             }}
                         >
-                            {game.description || "No description available."}
+                            {displayText || "No description available."}
                         </Typography>
+
+                        {isLong && (
+                            <Button
+                                onClick={this.toggleDescription}
+                                sx={{
+                                    color: "orange",
+                                    textTransform: "none",
+                                    fontWeight: "bold",
+                                    alignSelf: "flex-start",
+                                    "&:hover": { textDecoration: "underline" },
+                                }}
+                            >
+                                {showFullDescription ? "Show Less ▲" : "Show More ▼"}
+                            </Button>
+                        )}
 
                         {game.game_url && (
                             <Button
@@ -157,8 +183,8 @@ class GameDetails extends Component {
                                 target="_blank"
                                 variant="contained"
                                 sx={{
-                                    background:
-                                        "linear-gradient(90deg, #ff9800 0%, #ffb74d 100%)",
+                                    mt: 2,
+                                    background: "linear-gradient(90deg, #ff9800 0%, #ffb74d 100%)",
                                     fontWeight: "bold",
                                     color: "#000",
                                     px: 3,
@@ -166,8 +192,7 @@ class GameDetails extends Component {
                                     borderRadius: "8px",
                                     width: "fit-content",
                                     "&:hover": {
-                                        background:
-                                            "linear-gradient(90deg, #ffa726 0%, #ffd54f 100%)",
+                                        background: "linear-gradient(90deg, #ffa726 0%, #ffd54f 100%)",
                                         boxShadow: "0 0 15px rgba(255,165,0,0.7)",
                                     },
                                 }}

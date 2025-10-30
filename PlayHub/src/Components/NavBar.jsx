@@ -35,11 +35,11 @@ class NavBar extends Component {
     handleSearchChange = (e) => this.setState({ searchTerm: e.target.value });
 
     handleSearchSubmit = (e) => {
-        if (e.key === "Enter" && this.state.searchTerm.trim() !== "") {
+        if (e.key === "Enter") {
             const searchQuery = this.state.searchTerm.trim();
             if (this.props.onSearch) this.props.onSearch(searchQuery);
-            this.props.navigate(`/?search=${encodeURIComponent(searchQuery)}`);
-            this.setState({ searchOpen: false });
+            this.props.navigate(`${searchQuery ? `/?search=${encodeURIComponent(searchQuery)}` : '/'}`);
+            this.setState({ searchOpen: false })
         }
     };
 
@@ -58,14 +58,16 @@ class NavBar extends Component {
     };
 
     handleCategorySelect = (name) => {
-        let isMobile = window.innerWidth < 900;
         if (this.props.onGenreSelect) this.props.onGenreSelect(name);
-        this.setState({ drawerOpen: isMobile ? false : true });
+        this.setState({ drawerOpen: false });
     };
 
     handleSearchOpen = () => this.setState({ searchOpen: true });
+
     handleSearchClose = () => this.setState({ searchOpen: false });
+
     handleMenuOpen = (event) => this.setState({ anchorEl: event.currentTarget });
+    
     handleMenuClose = () => this.setState({ anchorEl: null });
 
     componentDidMount() {
@@ -159,7 +161,7 @@ class NavBar extends Component {
                                                 <InputAdornment position="end">
                                                     {this.state.showSearchBar &&
                                                         window.innerWidth < 900 ? (
-                                                        <IconButton onClick={this.handleSearchToggle}>
+                                                        <IconButton onClick={this.handleSearchSubmit}>
                                                             <CloseIcon sx={{ color: "orange" }} />
                                                         </IconButton>
                                                     ) : (

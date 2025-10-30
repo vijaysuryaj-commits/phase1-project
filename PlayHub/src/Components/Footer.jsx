@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import moment from "moment";
 
 class Footer extends Component {
     render() {
@@ -25,7 +26,7 @@ class Footer extends Component {
 
         return (
             <footer style={footerStyle}>
-                <span style={brandStyle}>PlayHub</span> © 2025 All rights reserved.
+                <span style={brandStyle}>PlayHub</span> ©{2003} - {moment().format('YYYY')} All rights reserved.
             </footer>
         );
     }
