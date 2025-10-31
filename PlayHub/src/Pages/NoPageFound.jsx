@@ -1,7 +1,7 @@
 import { Button } from '@mui/material'
 import React, { Component } from 'react'
 import { withRouter } from '../Helpers/withRouter'
-
+import { ArrowBack } from '@mui/icons-material'
 class NoPageFound extends Component {
     render() {
         const { navigate } = this.props
@@ -24,7 +24,7 @@ class NoPageFound extends Component {
                     }}
 
                 >
-                    Back
+                    <ArrowBack/> Back
                 </Button>
             </div>
         )

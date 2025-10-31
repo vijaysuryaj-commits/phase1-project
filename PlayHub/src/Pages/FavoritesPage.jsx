@@ -7,8 +7,13 @@ import {
   CardContent,
   Chip,
   Button,
+  IconButton,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { withRouter } from "../Helpers/withRouter";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
@@ -24,6 +29,8 @@ class FavoritesPage extends Component {
   state = {
     favoriteGames: [],
     loading: true,
+    snackbarOpen: false,
+    snackbarMessage: "",
   };
 
   async componentDidMount() {
@@ -51,31 +58,52 @@ class FavoritesPage extends Component {
   }
 
   handleBack = () => {
-    this.props.navigate("/"); 
+    this.props.navigate("/");
+  };
+
+  handleToggleFavorite = (e, gameId) => {
+    e.stopPropagation();
+    const { auth } = this.props;
+    const { user, toggleFavorite } = auth;
+
+    if (!user) {
+      this.props.navigate("/login");
+      return;
+    }
+
+    const isFavorite = user.favorites?.includes(gameId);
+    toggleFavorite(gameId);
+
+    this.setState((prev) => ({
+      favoriteGames: prev.favoriteGames.filter((g) => g.id !== gameId),
+      snackbarOpen: true,
+      snackbarMessage: isFavorite
+        ? "Game removed from favorites 💔"
+        : "Game added to favorites ❤️",
+    }));
+
+    setTimeout(() => {
+      this.setState({ snackbarOpen: false });
+    }, 2500);
+  };
+
+  handleCloseSnackbar = () => {
+    this.setState({ snackbarOpen: false });
   };
 
   render() {
-    const { favoriteGames, loading } = this.state;
+    const { favoriteGames, loading, snackbarOpen, snackbarMessage } = this.state;
+    const { auth } = this.props;
 
     return (
       <Box sx={{ padding: 3 }}>
         <Box
           display="flex"
-          justifyContent="space-between"
-          alignItems="center"
+          flexDirection="column"
+          alignItems="flex-start"
           mb={3}
+          gap={1}
         >
-          <Typography
-            variant="h5"
-            sx={{
-              color: "orange",
-              fontWeight: "bold",
-              textShadow: "0 0 10px orange",
-            }}
-          >
-            ♠️ Your Favorite Games
-          </Typography>
-
           <Button
             startIcon={<ArrowBackIcon />}
             onClick={this.handleBack}
@@ -97,6 +125,17 @@ class FavoritesPage extends Component {
           >
             Back
           </Button>
+
+          <Typography
+            variant="h5"
+            sx={{
+              color: "orange",
+              fontWeight: "bold",
+              textShadow: "0 0 10px orange",
+            }}
+          >
+            💖 Your Favorite Games
+          </Typography>
         </Box>
 
         {loading ? (
@@ -112,6 +151,7 @@ class FavoritesPage extends Component {
             {favoriteGames.map((game) => (
               <Card
                 key={game.id}
+                onClick={() => this.props.navigate(`/game/${game.id}`)}
                 sx={{
                   background:
                     "linear-gradient(160deg, rgba(25,20,10,0.7), rgba(10,10,10,0.8))",
@@ -123,8 +163,28 @@ class FavoritesPage extends Component {
                     transform: "scale(1.03)",
                     boxShadow: "0 0 25px rgba(255,165,0,0.4)",
                   },
+                  cursor: "pointer",
+                  position: "relative",
                 }}
               >
+                
+                <IconButton
+                  onClick={(e) => this.handleToggleFavorite(e, game.id)}
+                  sx={{
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    backgroundColor: "rgba(0,0,0,0.4)",
+                    "&:hover": { backgroundColor: "rgba(0,0,0,0.6)" },
+                  }}
+                >
+                  {auth.user?.favorites?.includes(game.id) ? (
+                    <FavoriteIcon sx={{ color: "red" }} />
+                  ) : (
+                    <FavoriteBorderIcon sx={{ color: "orange" }} />
+                  )}
+                </IconButton>
+
                 <CardMedia
                   component="img"
                   height="180"
@@ -155,6 +215,8 @@ class FavoritesPage extends Component {
             ))}
           </Box>
         )}
+
+        
       </Box>
     );
   }

@@ -32,13 +32,24 @@ class NavBar extends Component {
         };
     }
 
-    handleSearchChange = (e) => this.setState({ searchTerm: e.target.value });
+    handleSearchChange = (e) => {
+        this.setState({ searchTerm: e.target.value });
+        // console.log("Nav search query : "+this.state.searchTerm)
+    }
 
     handleSearchSubmit = (e) => {
         if (e.key === "Enter") {
             const searchQuery = this.state.searchTerm.trim();
-            if (this.props.onSearch) this.props.onSearch(searchQuery);
-            this.props.navigate(`${searchQuery ? `/?search=${encodeURIComponent(searchQuery)}` : '/'}`);
+            if (this.props.onSearch) {
+                this.props.onSearch(searchQuery);
+                // console.log("App search query : "+this.props.searchQuery)
+            }
+            setTimeout(() => {
+                this.props.navigate(
+                    searchQuery ? `/?search=${encodeURIComponent(searchQuery)}` : "/",
+                    { replace: true }
+                );
+            }, 0);
             this.setState({ searchOpen: false })
         }
     };
@@ -67,11 +78,16 @@ class NavBar extends Component {
     handleSearchClose = () => this.setState({ searchOpen: false });
 
     handleMenuOpen = (event) => this.setState({ anchorEl: event.currentTarget });
-    
+
     handleMenuClose = () => this.setState({ anchorEl: null });
 
     componentDidMount() {
         window.addEventListener("resize", this.handleResize);
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps.searchQuery !== this.props.searchQuery) {
+            this.setState({ searchTerm: this.props.searchQuery || "" });
+        }
     }
 
     componentWillUnmount() {
@@ -155,7 +171,7 @@ class NavBar extends Component {
                                         placeholder="Search games..."
                                         value={this.state.searchTerm}
                                         onChange={this.handleSearchChange}
-                                        onKeyDown={this.handleSearchSubmit}
+                                        onKeyUp={this.handleSearchSubmit}
                                         InputProps={{
                                             endAdornment: (
                                                 <InputAdornment position="end">
@@ -197,6 +213,7 @@ class NavBar extends Component {
                                         color: "orange",
                                         display: { xs: "block", md: "none" },
                                         transform: "scale(1.1)",
+
                                     }}
                                 >
                                     <SearchIcon />
@@ -333,3 +350,4 @@ function withAuth(Component) {
 }
 
 export default withRouter(withAuth(NavBar));
+

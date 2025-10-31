@@ -23,75 +23,77 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-          <Box
-            sx={{
-              minHeight: "100vh",
-              backgroundImage: `url(${futuristicBg})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              backgroundAttachment: { xs: "scroll", md: "fixed" },
-              position: "relative",
-              display: "flex",
-              flexDirection: "column",
-              "&::after": {
-                content: '""',
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                backgroundColor: "rgba(0,0,0,0.65)",
-                zIndex: 0,
-              },
-            }}
-          >
-            <Box sx={{ position: "relative", zIndex: 1, flexGrow: 1 }}>
-              <NavBar
-                onGenreSelect={setSelectedGenre}
-                onSearch={setSearchQuery}
-                selectedGenre={selectedGenre}
+        <Box
+          sx={{
+            minHeight: "100vh",
+            backgroundImage: `url(${futuristicBg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: { xs: "scroll", md: "fixed" },
+            position: "relative",
+            display: "flex",
+            flexDirection: "column",
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0,0,0,0.65)",
+              zIndex: 0,
+            },
+          }}
+        >
+          <Box sx={{ position: "relative", zIndex: 1, flexGrow: 1 }}>
+            <NavBar
+              onGenreSelect={setSelectedGenre}
+              onSearch={setSearchQuery}
+              selectedGenre={selectedGenre}
+              searchQuery={searchQuery}
+            />
+            <Toolbar />
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <HomePage
+                    selectedGenre={selectedGenre}
+                    searchQuery={searchQuery}
+                    clearSearch={() => setSearchQuery("")}
+                    setSelectedGenre={setSelectedGenre}
+                  />
+                }
               />
-              <Toolbar />
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <HomePage
-                      selectedGenre={selectedGenre}
-                      searchQuery={searchQuery}
-                      clearSearch={() => setSearchQuery("")}
-                    />
-                  }
-                />
-                <Route
-                  path="/favorites"
-                  element={
-                    <RequireAuth>
-                      <FavoritesPage />
-                    </RequireAuth>
-                  }
-                />
-                <Route
-                  path="/profile"
-                  element={
-                    <RequireAuth>
-                      <ProfilePage />
-                    </RequireAuth>
-                  }
-                />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/game/:id" element={<GameDetails />} />
-                <Route path='*' element={<NoPageFound />} />
-              </Routes>
-              <Toolbar />
-            </Box>
-
-            <Box sx={{ position: "relative", zIndex: 1 }}>
-              <Footer />
-            </Box>
+              <Route
+                path="/favorites"
+                element={
+                  <RequireAuth>
+                    <FavoritesPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <RequireAuth>
+                    <ProfilePage />
+                  </RequireAuth>
+                }
+              />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/game/:id" element={<GameDetails />} />
+              <Route path='*' element={<NoPageFound />} />
+            </Routes>
+            <Toolbar />
           </Box>
+
+          <Box sx={{ position: "relative", zIndex: 1 }}>
+            <Footer />
+          </Box>
+        </Box>
       </BrowserRouter>
     </AuthProvider>
   );

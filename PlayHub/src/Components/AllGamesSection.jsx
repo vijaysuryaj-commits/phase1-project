@@ -3,9 +3,6 @@ import axios from "axios";
 import {
   Box,
   Typography,
-  Card,
-  CardMedia,
-  CardContent,
   Chip,
   Pagination,
   FormControl,
@@ -17,8 +14,17 @@ import {
   Menu,
   Divider,
 } from "@mui/material";
+import CreateCard from "./CreateCard";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { withRouter } from "../Helpers/withRouter";
+import { useAuth } from "../context/AuthContext";
+
+function withAuth(Component) {
+  return function AuthWrapped(props) {
+    const auth = useAuth();
+    return <Component {...props} auth={auth} />;
+  };
+}
 
 class AllGamesSection extends Component {
   constructor(props) {
@@ -34,6 +40,10 @@ class AllGamesSection extends Component {
       selectedCategory: props.selectedGenre || "",
       userOverriddenCategory: false,
       anchorEl: null,
+
+      tempSortBy: "release-date",
+      tempPlatform: "",
+      tempCategory: props.selectedGenre || "",
     };
   }
 
@@ -41,23 +51,17 @@ class AllGamesSection extends Component {
     await this.fetchGames();
   }
 
-  async componentDidUpdate(prevProps, prevState) {
+  async componentDidUpdate(prevProps) {
     const { selectedGenre } = this.props;
 
     if (
       selectedGenre !== prevProps.selectedGenre &&
       !this.state.userOverriddenCategory
     ) {
-      this.setState({ selectedCategory: selectedGenre || "" });
-    }
-
-    if (
-      prevState.sortBy !== this.state.sortBy ||
-      prevState.platform !== this.state.platform ||
-      prevState.selectedCategory !== this.state.selectedCategory ||
-      prevProps.selectedGenre !== selectedGenre
-    ) {
-      await this.fetchGames();
+      this.setState({
+        selectedCategory: selectedGenre || "",
+        tempCategory: selectedGenre || "",
+      });
     }
   }
 
@@ -103,45 +107,83 @@ class AllGamesSection extends Component {
     this.setState({ anchorEl: event.currentTarget });
   handleFilterMenuClose = () => this.setState({ anchorEl: null });
 
-  handleSortChange = (event) =>
-    this.setState({ sortBy: event.target.value, currentPage: 1 });
+  handleTempChange = (key, value) => {
+    this.setState({ [key]: value });
+  };
 
-  handlePlatformChange = (event) =>
-    this.setState({ platform: event.target.value, currentPage: 1 });
+  handleApplyFilters = async () => {
+    const {
+      tempSortBy,
+      tempPlatform,
+      tempCategory,
+      sortBy,
+      platform,
+      selectedCategory,
+    } = this.state;
 
-  handleCategoryChange = (event) =>
-    this.setState({
-      selectedCategory: event.target.value,
-      currentPage: 1,
-      userOverriddenCategory: true,
+    const changed =
+      tempSortBy !== sortBy ||
+      tempPlatform !== platform ||
+      tempCategory !== selectedCategory;
+
+    if (changed) {
+      await this.setState({
+        sortBy: tempSortBy,
+        platform: tempPlatform,
+        selectedCategory: tempCategory,
+        userOverriddenCategory: true,
+        anchorEl: null,
+      });
+      await this.fetchGames();
+    } else {
+      this.setState({ anchorEl: null });
+    }
+  };
+
+  handleRemoveFilter = async (key) => {
+    if (key === "category") {
+      await this.setState({
+        selectedCategory: "",
+        tempCategory: "",
+        userOverriddenCategory: false,
+      });
+      if (this.props.onCategorySelect) {
+        this.props.onCategorySelect(null);
+      }
+    }
+    if (key === "platform") {
+      await this.setState({ platform: "", tempPlatform: "" });
+    }
+    if (key === "sortBy") {
+      await this.setState({
+        sortBy: "release-date",
+        tempSortBy: "release-date",
+      });
+    }
+
+    await this.fetchGames();
+  };
+
+  handleClearAll = async () => {
+    await this.setState({
+      selectedCategory: "",
+      platform: "",
+      sortBy: "release-date",
+      tempCategory: "",
+      tempPlatform: "",
+      tempSortBy: "release-date",
+      userOverriddenCategory: false,
     });
+    if (this.props.onCategorySelect) {
+      this.props.onCategorySelect(null); 
+    }
+    await this.fetchGames();
+  };
 
   handlePageChange = (event, value) => {
     this.setState({ currentPage: value });
     const el = document.getElementById("all-games-section");
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  handleRemoveFilter = (key) => {
-    if (key === "category") {
-      this.setState(
-        {
-          selectedCategory: "",
-          userOverriddenCategory: false,
-        },
-        async () => {
-          if (this.props.onCategorySelect) this.props.onCategorySelect(null);
-          else if (this.props.onClearGenre) this.props.onClearGenre();
-          await this.fetchGames();
-        }
-      );
-    }
-
-    if (key === "platform")
-      this.setState({ platform: "" }, () => this.fetchGames());
-
-    if (key === "sortBy")
-      this.setState({ sortBy: "release-date" }, () => this.fetchGames());
   };
 
   render() {
@@ -155,6 +197,9 @@ class AllGamesSection extends Component {
       platform,
       selectedCategory,
       anchorEl,
+      tempSortBy,
+      tempPlatform,
+      tempCategory,
     } = this.state;
 
     const { navigate, selectedGenre } = this.props;
@@ -250,29 +295,13 @@ class AllGamesSection extends Component {
             {activeFilters.length > 1 && (
               <Button
                 size="small"
-                onClick={() =>
-                  this.setState(
-                    {
-                      selectedCategory: "",
-                      platform: "",
-                      sortBy: "release-date",
-                      userOverriddenCategory: false,
-                    },
-                    () => {
-                      if (this.props.onCategorySelect)
-                        this.props.onCategorySelect(null);
-                      this.fetchGames();
-                    }
-                  )
-                }
+                onClick={this.handleClearAll}
                 sx={{
                   ml: 1,
                   color: "orange",
                   textTransform: "none",
                   fontWeight: "bold",
-                  "&:hover": {
-                    textShadow: "0 0 8px orange",
-                  },
+                  "&:hover": { textShadow: "0 0 8px orange" },
                 }}
               >
                 Clear All ✖
@@ -307,7 +336,7 @@ class AllGamesSection extends Component {
             onClose={this.handleFilterMenuClose}
             PaperProps={{
               sx: {
-                minWidth: 280,
+                width:{xs:275,sm:300,md:350},
                 borderRadius: 2,
                 p: 2,
                 background:
@@ -331,9 +360,11 @@ class AllGamesSection extends Component {
             <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel sx={{ color: "orange" }}>Category</InputLabel>
               <Select
-                value={selectedCategory || selectedGenre || ""}
+                value={tempCategory}
                 label="Category"
-                onChange={this.handleCategoryChange}
+                onChange={(e) =>
+                  this.handleTempChange("tempCategory", e.target.value)
+                }
                 sx={{
                   color: "white",
                   "& .MuiOutlinedInput-notchedOutline": {
@@ -356,9 +387,11 @@ class AllGamesSection extends Component {
             <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel sx={{ color: "orange" }}>Platform</InputLabel>
               <Select
-                value={platform}
+                value={tempPlatform}
                 label="Platform"
-                onChange={this.handlePlatformChange}
+                onChange={(e) =>
+                  this.handleTempChange("tempPlatform", e.target.value)
+                }
                 sx={{
                   color: "white",
                   "& .MuiOutlinedInput-notchedOutline": {
@@ -375,12 +408,15 @@ class AllGamesSection extends Component {
               </Select>
             </FormControl>
 
-            <FormControl fullWidth>
+
+            <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel sx={{ color: "orange" }}>Sort By</InputLabel>
               <Select
-                value={sortBy}
+                value={tempSortBy}
                 label="Sort By"
-                onChange={this.handleSortChange}
+                onChange={(e) =>
+                  this.handleTempChange("tempSortBy", e.target.value)
+                }
                 sx={{
                   color: "white",
                   "& .MuiOutlinedInput-notchedOutline": {
@@ -396,6 +432,24 @@ class AllGamesSection extends Component {
                 <MenuItem value="alphabetical">Alphabetical</MenuItem>
               </Select>
             </FormControl>
+
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={this.handleApplyFilters}
+              sx={{
+                mt: 1,
+                backgroundColor: "orange",
+                color: "#000",
+                fontWeight: "bold",
+                "&:hover": {
+                  backgroundColor: "#ffb84d",
+                  boxShadow: "0 0 15px orange",
+                },
+              }}
+            >
+              Apply Filters
+            </Button>
           </Menu>
         </Box>
 
@@ -430,69 +484,13 @@ class AllGamesSection extends Component {
               gridTemplateColumns={{
                 xs: "1fr",
                 sm: "repeat(2, 1fr)",
-                md: "repeat(4, 1fr)",
+                md: "repeat(3, 1fr)",
+                lg: "repeat(4, 1fr)",
               }}
               gap={2}
             >
               {currentGames.map((game) => (
-                <Card
-                  key={game.id}
-                  onClick={() => navigate(`/game/${game.id}`)}
-                  sx={{
-                    borderRadius: 3,
-                    background:
-                      "linear-gradient(160deg, rgba(25,20,10,0.7), rgba(10,10,10,0.8))",
-                    backdropFilter: "blur(6px)",
-                    border: "1px solid rgba(255,165,0,0.2)",
-                    boxShadow: "0 0 15px rgba(255,140,0,0.15)",
-                    display: "flex",
-                    flexDirection: "column",
-                    cursor: "pointer",
-                    transition: "0.3s",
-                    "&:hover": {
-                      transform: "scale(1.04)",
-                      boxShadow: "0 0 25px rgba(255,165,0,0.4)",
-                    },
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    image={game.thumbnail}
-                    alt={game.title}
-                    sx={{
-                      width: "100%",
-                      height: 180,
-                      objectFit: "cover",
-                      borderRadius: "8px 8px 0 0",
-                    }}
-                  />
-                  <CardContent>
-                    <Typography
-                      variant="subtitle1"
-                      fontWeight="bold"
-                      noWrap
-                      sx={{ color: "orange" }}
-                    >
-                      {game.title}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "rgba(255,255,255,0.7)" }}
-                      noWrap
-                    >
-                      {game.platform}
-                    </Typography>
-                    <Chip
-                      label={game.genre}
-                      size="small"
-                      sx={{
-                        mt: 1,
-                        color: "#fff",
-                        backgroundColor: "rgba(255,165,0,0.3)",
-                      }}
-                    />
-                  </CardContent>
-                </Card>
+                <CreateCard key={game.id} navigate={navigate} game={game} />
               ))}
             </Box>
 
@@ -521,4 +519,4 @@ class AllGamesSection extends Component {
   }
 }
 
-export default withRouter(AllGamesSection);
+export default withRouter(withAuth(AllGamesSection));

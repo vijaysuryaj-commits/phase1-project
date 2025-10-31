@@ -1,5 +1,5 @@
 import React, { Component, createContext, useContext } from "react";
-import { Snackbar, Alert, IconButton} from "@mui/material";
+import { Snackbar, Alert, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 const AuthContext = createContext(null);
 
@@ -75,7 +75,9 @@ export class AuthProvider extends Component {
 
     toggleFavorite = (gameId) => {
         const { currentUser, users } = this.state;
-        if (!currentUser) return;
+        if (!currentUser) {
+            return
+        };
 
         const updatedUsers = users.map((u) => {
             if (u.username === currentUser.username) {

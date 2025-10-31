@@ -196,7 +196,7 @@ class GameDetails extends Component {
                                     },
                                 }}
                             >
-                                🎮 PLAY NOW
+                                PLAY NOW!
                             </Button>
                         )}
                     </CardContent>
