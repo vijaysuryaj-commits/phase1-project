@@ -3,9 +3,6 @@ import { Snackbar, Alert, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 const AuthContext = createContext(null);
 
-
-
-
 export class AuthProvider extends Component {
     state = {
         users: JSON.parse(localStorage.getItem("users")) || [],

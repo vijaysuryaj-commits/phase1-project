@@ -97,7 +97,7 @@ class HomePage extends Component {
   }
 
   render() {
-    const { selectedGenre,setSelectedGenre, searchQuery, clearSearch, navigate } = this.props;
+    const { selectedGenre, setSelectedGenre, searchQuery, clearSearch, navigate } = this.props;
     const {
       popularGames,
       searchResults,
@@ -167,8 +167,8 @@ class HomePage extends Component {
               justifyContent: "space-between",
               flexWrap: "wrap",
               mb: 4,
-              flexDirection:{xs:'column', sm:'column',md:'row'},
-              
+              flexDirection: { xs: 'column', sm: 'column', md: 'row' },
+
             }}
           >
             <Button
@@ -197,14 +197,14 @@ class HomePage extends Component {
             </Button>
 
             <Typography
-              variant={width<=600 ? "subtitle1" : "h5"}
+              variant={width <= 600 ? "subtitle1" : "h5"}
               fontWeight="bold"
               sx={{
                 flex: 1,
                 textAlign: "center",
                 color: "orange",
                 textShadow: "0 0 8px orange",
-                mt:{xs:1,sm:1,md:0}
+                mt: { xs: 1, sm: 1, md: 0 }
               }}
             >
               🔍 Search Results for “{searchQuery}”

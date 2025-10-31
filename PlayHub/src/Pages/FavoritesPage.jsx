@@ -167,7 +167,7 @@ class FavoritesPage extends Component {
                   position: "relative",
                 }}
               >
-                
+
                 <IconButton
                   onClick={(e) => this.handleToggleFavorite(e, game.id)}
                   sx={{
@@ -201,22 +201,43 @@ class FavoritesPage extends Component {
                   <Typography variant="body2" sx={{ color: "white" }}>
                     {game.platform}
                   </Typography>
-                  <Chip
-                    label={game.genre}
-                    size="small"
-                    sx={{
-                      backgroundColor: "rgba(255,165,0,0.3)",
-                      color: "#fff",
-                      mt: 1,
-                    }}
-                  />
+                  <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    mt: '5px'
+                  }}>
+                    <Chip
+                      label={game.genre}
+                      size="small"
+                      sx={{
+                        backgroundColor: "rgba(255,165,0,0.3)",
+                        color: "#fff",
+                        mt: 1,
+                      }}
+                    />
+                    <Button
+                      variant="contained"
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "orange",
+                        color: "#000",
+                        "&:hover": {
+                          backgroundColor: "#ffb84d",
+                          boxShadow: "0 0 10px orange",
+                        },
+                      }}
+                      href={game.game_url}
+                      target="_blank"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      PLAY!
+                    </Button>
+                  </Box>
                 </CardContent>
               </Card>
             ))}
           </Box>
         )}
-
-        
       </Box>
     );
   }
