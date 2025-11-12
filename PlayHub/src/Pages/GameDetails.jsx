@@ -19,7 +19,7 @@ class GameDetails extends Component {
     async componentDidMount() {
         const { id } = this.props.params;
         try {
-            const res = await axios.get(`/api/api/game?id=${id}`);
+            const res = await axios.get(`/api/game?id=${id}`);
             this.setState({ game: res.data, loading: false });
         } catch {
             this.setState({ error: "Failed to load game details", loading: false });

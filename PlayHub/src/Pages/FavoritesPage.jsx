@@ -8,8 +8,6 @@ import {
   Chip,
   Button,
   IconButton,
-  Snackbar,
-  Alert,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -43,7 +41,7 @@ class FavoritesPage extends Component {
     }
 
     try {
-      const response = await axios.get("/api/api/games");
+      const response = await axios.get("/api/games");
       const allGames = response.data;
 
       const favoriteGames = allGames.filter((game) =>
