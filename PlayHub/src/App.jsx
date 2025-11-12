@@ -12,7 +12,7 @@ import { useState } from "react";
 import { Box, Toolbar } from "@mui/material";
 import Footer from "./Components/Footer.jsx";
 import NoPageFound from "./Pages/NoPageFound.jsx";
-
+import './App.css'
 import futuristicBg from "./assets/futuristic-background-with-colorful-glowing-abstract-neon-lights.jpg";
 
 

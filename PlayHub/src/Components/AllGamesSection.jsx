@@ -37,8 +37,6 @@ class AllGamesSection extends Component {
       gamesPerPage: 12,
       sortBy: "release-date",
       platform: "",
-      selectedCategory: props.selectedGenre || "",
-      userOverriddenCategory: false,
       anchorEl: null,
 
       tempSortBy: "release-date",
@@ -52,15 +50,10 @@ class AllGamesSection extends Component {
   }
 
   async componentDidUpdate(prevProps) {
-    const { selectedGenre } = this.props;
-
-    if (
-      selectedGenre !== prevProps.selectedGenre &&
-      !this.state.userOverriddenCategory
-    ) {
+    if (prevProps.selectedGenre !== this.props.selectedGenre) {
+      await this.fetchGames();
       this.setState({
-        selectedCategory: selectedGenre || "",
-        tempCategory: selectedGenre || "",
+        tempCategory: this.props.selectedGenre || "",
       });
     }
   }
@@ -68,22 +61,16 @@ class AllGamesSection extends Component {
   async fetchGames() {
     this.setState({ loading: true, error: null });
     try {
-      let url = "/api/api/games";
+      let url = "/api/games";
       const params = [];
 
+      const { sortBy, platform } = this.state;
       const { selectedGenre } = this.props;
-      const { sortBy, platform, selectedCategory, userOverriddenCategory } =
-        this.state;
 
-      const finalCategory =
-        userOverriddenCategory || !selectedGenre
-          ? selectedCategory
-          : selectedGenre;
-
-      if (finalCategory)
+      if (selectedGenre)
         params.push(
           `category=${encodeURIComponent(
-            finalCategory.toLowerCase().replace(/\s+/g, "-")
+            selectedGenre.toLowerCase().replace(/\s+/g, "-")
           )}`
         );
       if (platform) params.push(`platform=${platform}`);
@@ -91,7 +78,7 @@ class AllGamesSection extends Component {
 
       if (params.length > 0) url += `?${params.join("&")}`;
 
-      const response = await axios.get(url);
+      const response = await axios.get(url, { timeout: 10000 });
       this.setState({
         games: response.data,
         loading: false,
@@ -103,8 +90,7 @@ class AllGamesSection extends Component {
     }
   }
 
-  handleFilterMenuOpen = (event) =>
-    this.setState({ anchorEl: event.currentTarget });
+  handleFilterMenuOpen = (event) => this.setState({ anchorEl: event.currentTarget });
   handleFilterMenuClose = () => this.setState({ anchorEl: null });
 
   handleTempChange = (key, value) => {
@@ -112,71 +98,54 @@ class AllGamesSection extends Component {
   };
 
   handleApplyFilters = async () => {
-    const {
-      tempSortBy,
-      tempPlatform,
-      tempCategory,
-      sortBy,
-      platform,
-      selectedCategory,
-    } = this.state;
+    const { tempSortBy, tempPlatform, tempCategory, sortBy, platform } = this.state;
+    const { selectedGenre, setSelectedGenre } = this.props;
 
     const changed =
       tempSortBy !== sortBy ||
       tempPlatform !== platform ||
-      tempCategory !== selectedCategory;
+      tempCategory !== selectedGenre;
 
     if (changed) {
       await this.setState({
         sortBy: tempSortBy,
         platform: tempPlatform,
-        selectedCategory: tempCategory,
-        userOverriddenCategory: true,
         anchorEl: null,
       });
-      await this.fetchGames();
+      setSelectedGenre(tempCategory || null);
     } else {
       this.setState({ anchorEl: null });
     }
   };
 
   handleRemoveFilter = async (key) => {
+    const { setSelectedGenre } = this.props;
+
     if (key === "category") {
-      await this.setState({
-        selectedCategory: "",
-        tempCategory: "",
-        userOverriddenCategory: false,
-      });
-      if (this.props.onCategorySelect) {
-        this.props.onCategorySelect(null);
-      }
+      setSelectedGenre(null);
+      this.setState({ tempCategory: "" });
     }
     if (key === "platform") {
-      await this.setState({ platform: "", tempPlatform: "" });
+      this.setState({ platform: "", tempPlatform: "" });
     }
     if (key === "sortBy") {
-      await this.setState({
-        sortBy: "release-date",
-        tempSortBy: "release-date",
-      });
+      this.setState({ sortBy: "release-date", tempSortBy: "release-date" });
     }
 
     await this.fetchGames();
   };
 
   handleClearAll = async () => {
-    await this.setState({
-      selectedCategory: "",
+    const { setSelectedGenre } = this.props;
+
+    this.setState({
       platform: "",
       sortBy: "release-date",
       tempCategory: "",
       tempPlatform: "",
       tempSortBy: "release-date",
-      userOverriddenCategory: false,
     });
-    if (this.props.onCategorySelect) {
-      this.props.onCategorySelect(null); 
-    }
+    setSelectedGenre(null);
     await this.fetchGames();
   };
 
@@ -195,7 +164,6 @@ class AllGamesSection extends Component {
       currentPage,
       sortBy,
       platform,
-      selectedCategory,
       anchorEl,
       tempSortBy,
       tempPlatform,
@@ -227,9 +195,8 @@ class AllGamesSection extends Component {
     const open = Boolean(anchorEl);
 
     const activeFilters = [];
-    const categoryLabel = selectedCategory || selectedGenre;
-    if (categoryLabel)
-      activeFilters.push({ label: categoryLabel, key: "category" });
+    if (selectedGenre)
+      activeFilters.push({ label: selectedGenre, key: "category" });
     if (platform)
       activeFilters.push({ label: platform.toUpperCase(), key: "platform" });
     if (sortBy && sortBy !== "release-date") {
@@ -262,7 +229,7 @@ class AllGamesSection extends Component {
             textShadow: "0 0 10px rgba(255,165,0,0.8)",
           }}
         >
-          🎯 {selectedCategory || selectedGenre || "All Games"}
+          🎯 {selectedGenre || "All Games"}
         </Typography>
 
         {activeFilters.length > 0 && (
@@ -336,7 +303,7 @@ class AllGamesSection extends Component {
             onClose={this.handleFilterMenuClose}
             PaperProps={{
               sx: {
-                width:{xs:275,sm:300,md:350},
+                width: { xs: 275, sm: 300, md: 350 },
                 borderRadius: 2,
                 p: 2,
                 background:
@@ -407,7 +374,6 @@ class AllGamesSection extends Component {
                 <MenuItem value="browser">Browser</MenuItem>
               </Select>
             </FormControl>
-
 
             <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel sx={{ color: "orange" }}>Sort By</InputLabel>
@@ -506,8 +472,16 @@ class AllGamesSection extends Component {
                       "&.Mui-selected": {
                         backgroundColor: "orange",
                         color: "#000",
+                        "&:hover":{
+                          backgroundColor: "orange",
+                          color: "white",
+                        },
                       },
-                    },
+                      "&:hover": {
+                        backgroundColor: "orange",
+                        color: "black",
+                      },
+                    }
                   }}
                 />
               </Box>

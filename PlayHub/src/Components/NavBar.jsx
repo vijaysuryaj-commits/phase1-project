@@ -69,7 +69,8 @@ class NavBar extends Component {
     };
 
     handleCategorySelect = (name) => {
-        if (this.props.onGenreSelect) this.props.onGenreSelect(name);
+        if (this.props.onGenreSelect)
+            this.props.onGenreSelect(name);
         this.setState({ drawerOpen: false });
     };
 
@@ -167,6 +168,7 @@ class NavBar extends Component {
                             {this.state.showSearchBar ? (
                                 <Slide direction="down" in={this.state.showSearchBar}>
                                     <TextField
+                                        autoComplete="off"
                                         variant="outlined"
                                         placeholder="Search games..."
                                         value={this.state.searchTerm}

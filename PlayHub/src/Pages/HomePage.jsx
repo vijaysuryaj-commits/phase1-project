@@ -72,7 +72,7 @@ class HomePage extends Component {
 
   async fetchPopularGames() {
     try {
-      const response = await axios.get("/api/api/games?sort-by=popularity");
+      const response = await axios.get("/api/games?sort-by=popularity");
       this.setState({
         popularGames: response.data.slice(0, 15),
         loading: false,
@@ -86,7 +86,7 @@ class HomePage extends Component {
   async fetchSearchResults(query) {
     this.setState({ searching: true, error: null });
     try {
-      const res = await axios.get("/api/api/games?sort-by=alphabetical");
+      const res = await axios.get("/api/games?sort-by=alphabetical");
       const filtered = res.data.filter((g) =>
         g.title.toLowerCase().includes(query.toLowerCase())
       );
@@ -321,11 +321,7 @@ class HomePage extends Component {
           variant="middle"
         />
 
-        <AllGamesSection selectedGenre={selectedGenre} onCategorySelect={
-          (category) => {
-            this.props.setSelectedGenre(category)
-          }
-        } />
+        <AllGamesSection selectedGenre={selectedGenre} setSelectedGenre={setSelectedGenre} />
       </Box>
     );
   }
