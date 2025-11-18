@@ -113,6 +113,7 @@ class AllGamesSection extends Component {
         anchorEl: null,
       });
       setSelectedGenre(tempCategory || null);
+      await this.fetchGames();
     } else {
       this.setState({ anchorEl: null });
     }
@@ -121,18 +122,39 @@ class AllGamesSection extends Component {
   handleRemoveFilter = async (key) => {
     const { setSelectedGenre } = this.props;
 
+    let { sortBy, platform } = this.state;
+    let category = this.props.selectedGenre;
+
     if (key === "category") {
+      category = null;
       setSelectedGenre(null);
       this.setState({ tempCategory: "" });
     }
     if (key === "platform") {
+      platform = "";
       this.setState({ platform: "", tempPlatform: "" });
     }
     if (key === "sortBy") {
+      sortBy = "release-date";
       this.setState({ sortBy: "release-date", tempSortBy: "release-date" });
     }
 
-    await this.fetchGames();
+    await this.setState({ sortBy, platform });
+    const anyActive =
+      category || (platform && platform !== "") || (sortBy && sortBy !== "release-date");
+
+    if (anyActive) {
+      await this.fetchGames();
+    } else {
+      await this.setState({
+        sortBy: "release-date",
+        platform: "",
+        tempCategory: "",
+        tempPlatform: "",
+        tempSortBy: "release-date",
+      });
+      await this.fetchGames();
+    }
   };
 
   handleClearAll = async () => {
@@ -472,7 +494,7 @@ class AllGamesSection extends Component {
                       "&.Mui-selected": {
                         backgroundColor: "orange",
                         color: "#000",
-                        "&:hover":{
+                        "&:hover": {
                           backgroundColor: "orange",
                           color: "white",
                         },
