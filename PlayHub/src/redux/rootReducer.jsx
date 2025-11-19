@@ -1,10 +1,8 @@
 import { combineReducers } from "redux";
-import gamesReducer from "./games/gamesReducer";
+import gameReducer from "./games/gameReducer";
 import filterReducer from "./filters/filterReducer";
 
-const rootReducer = combineReducers({
-  games: gamesReducer,
-  filters: filterReducer,
+export default combineReducers({
+  gamesState: gameReducer,
+  filtersState: filterReducer,
 });
-
-export default rootReducer;

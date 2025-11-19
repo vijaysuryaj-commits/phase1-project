@@ -26,6 +26,7 @@ import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import PublicIcon from "@mui/icons-material/Public";
 import { withRouter } from "../Helpers/withRouter";
 import { useAuth } from "../context/AuthContext";
+import { setSelectedGenre } from "../redux/filters/filterActions";
 
 function withAuth(Component) {
   return function WrappedWithAuth(props) {
@@ -67,7 +68,7 @@ class SideDrawer extends Component {
   };
 
   render() {
-    const { open, onClose, selectedGenre, onCategorySelect } = this.props;
+    const { open, onClose, selectedGenre, setSelectedGenre } = this.props;
     const { user } = this.props.auth;
 
     const categories = [
@@ -149,7 +150,7 @@ class SideDrawer extends Component {
               sx={{
                 "&:hover": { backgroundColor: "rgba(255,165,0,0.1)" },
                 transition: "0.3s",
-                cursor:'pointer'
+                cursor: 'pointer'
               }}
             >
               <ListItemIcon sx={{ color: "#FFA500" }}>
@@ -165,7 +166,7 @@ class SideDrawer extends Component {
                   sx={{
                     "&:hover": { backgroundColor: "rgba(255,165,0,0.1)" },
                     transition: "0.3s",
-                    cursor:'pointer'
+                    cursor: 'pointer'
                   }}
                 >
                   <ListItemIcon sx={{ color: "#FFA500" }}>
@@ -179,7 +180,7 @@ class SideDrawer extends Component {
                   sx={{
                     "&:hover": { backgroundColor: "rgba(255,0,0,0.1)" },
                     transition: "0.3s",
-                    cursor:'pointer'
+                    cursor: 'pointer'
                   }}
                 >
                   <ListItemIcon sx={{ color: "#FF5555" }}>
@@ -194,7 +195,7 @@ class SideDrawer extends Component {
                 sx={{
                   "&:hover": { backgroundColor: "rgba(255,165,0,0.1)" },
                   transition: "0.3s",
-                  cursor:'pointer'
+                  cursor: 'pointer'
                 }}
               >
                 <ListItemIcon sx={{ color: "#FFA500" }}>
@@ -224,7 +225,7 @@ class SideDrawer extends Component {
             {categories.map((cat) => (
               <ListItem
                 key={cat}
-                onClick={() => onCategorySelect(cat)}
+                onClick={() => setSelectedGenre(cat)}
                 sx={{
                   borderLeft:
                     selectedGenre === cat
@@ -238,7 +239,7 @@ class SideDrawer extends Component {
                     backgroundColor: "rgba(255,165,0,0.1)",
                   },
                   transition: "0.3s",
-                  cursor:'pointer'
+                  cursor: 'pointer'
                 }}
               >
                 <ListItemIcon
@@ -260,27 +261,27 @@ class SideDrawer extends Component {
             ))}
 
             <ListItem
-              onClick={() => onCategorySelect(null)}
+              onClick={() => setSelectedGenre("")}
               sx={{
                 borderLeft:
-                  selectedGenre === null
+                  selectedGenre === ""
                     ? "3px solid #00BFFF"
                     : "3px solid transparent",
                 backgroundColor:
-                  selectedGenre === null
+                  selectedGenre === ""
                     ? "rgba(0,191,255,0.1)"
                     : "transparent",
                 "&:hover": {
                   backgroundColor: "rgba(0,191,255,0.1)",
                 },
                 transition: "0.3s",
-                cursor:'pointer'
+                cursor: 'pointer'
               }}
             >
               <ListItemIcon
                 sx={{
                   color:
-                    selectedGenre === null ? "#00BFFF" : "rgba(255,255,255,0.8)",
+                    selectedGenre === "" ? "#00BFFF" : "rgba(255,255,255,0.8)",
                 }}
               >
                 {this.getCategoryIcon("All Games")}
@@ -289,8 +290,8 @@ class SideDrawer extends Component {
                 primary="All Games"
                 primaryTypographyProps={{
                   fontSize: "0.95rem",
-                  fontWeight: selectedGenre === null ? "bold" : "normal",
-                  color: selectedGenre === null ? "#00BFFF" : "#fff",
+                  fontWeight: selectedGenre === "" ? "bold" : "normal",
+                  color: selectedGenre === "" ? "#00BFFF" : "#fff",
                 }}
               />
             </ListItem>
@@ -301,4 +302,11 @@ class SideDrawer extends Component {
   }
 }
 
+const mapStateToProps = (state) => ({
+  selectedGenre: state.filtersState.selectedGenre,
+});
+
+const mapDispatchToProps = {
+  setSelectedGenre,
+};
 export default withRouter(withAuth(SideDrawer));
