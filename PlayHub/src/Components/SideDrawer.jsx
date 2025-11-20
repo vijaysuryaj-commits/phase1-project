@@ -27,6 +27,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import { withRouter } from "../Helpers/withRouter";
 import { useAuth } from "../context/AuthContext";
 import { setSelectedGenre } from "../redux/filters/filterActions";
+import { connect } from "react-redux";
 
 function withAuth(Component) {
   return function WrappedWithAuth(props) {
@@ -67,6 +68,14 @@ class SideDrawer extends Component {
     return icons[name] || <SportsEsportsIcon />;
   };
 
+
+  componentDidMount() {
+    console.log("Side drawer mount")
+  }
+  componentWillUnmount() {
+    console.log("Side drawer unmount")
+
+  }
   render() {
     const { open, onClose, selectedGenre, setSelectedGenre } = this.props;
     const { user } = this.props.auth;
@@ -225,7 +234,11 @@ class SideDrawer extends Component {
             {categories.map((cat) => (
               <ListItem
                 key={cat}
-                onClick={() => setSelectedGenre(cat)}
+                onClick={async () => {
+                  await setSelectedGenre(cat);
+                  // console.log("Selected category:" + selectedGenre);
+                  onClose();
+                }}
                 sx={{
                   borderLeft:
                     selectedGenre === cat
@@ -309,4 +322,4 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
   setSelectedGenre,
 };
-export default withRouter(withAuth(SideDrawer));
+export default withRouter(withAuth(connect(mapStateToProps, mapDispatchToProps)(SideDrawer)));

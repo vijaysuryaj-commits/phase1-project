@@ -115,7 +115,7 @@
 
 // export default App;
 
-
+import './App.css'
 import { Route, Routes, BrowserRouter } from "react-router-dom";
 import NavBar from "./Components/NavBar";
 import HomePage from "./Pages/HomePage";

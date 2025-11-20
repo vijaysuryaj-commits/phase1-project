@@ -24,8 +24,8 @@ export const fetchPopularGames = () => async (dispatch) => {
   }
 };
 
-export const fetchGames = (filters = {}) => async (dispatch) => {
-  dispatch({ type: types.FETCH_GAMES_REQUEST });
+export const fetchFilteredGames = (filters = {}) => async (dispatch) => {
+  dispatch({ type: types.FETCH_FILTERED_GAMES_REQUEST });
   try {
     let url = "/api/games";
     const params = [];
@@ -41,6 +41,38 @@ export const fetchGames = (filters = {}) => async (dispatch) => {
 
     if (params.length)
       url += `?${params.join("&")}`;
+
+    const response = await axios.get(url);
+    dispatch({
+      type: types.FETCH_FILTERED_GAMES_SUCCESS,
+      payload: Array.isArray(response.data) ? response.data : []
+    });
+  } catch (err) {
+    dispatch({
+      type: types.FETCH_FILTERED_GAMES_FAILURE,
+      payload: err.message || "Failed to fetch games"
+    });
+  }
+};
+
+
+export const fetchGames = (filters = {}) => async (dispatch) => {
+  dispatch({ type: types.FETCH_GAMES_REQUEST });
+  try {
+    let url = "/api/games";
+    const params = [];
+
+    const platform = normalizePlatform(filters.platform);
+    const sortBy = normalizeSort(filters.sortBy, platform);
+
+    // if (filters.selectedGenre) {
+    //   params.push(`category=${encodeURIComponent(filters.selectedGenre.toLowerCase().replace(/\s+/g, "-"))}`);
+    // }
+    // if (platform) params.push(`platform=${platform}`);
+    // if (sortBy) params.push(`sort-by=${sortBy}`);
+
+    // if (params.length)
+    //   url += `?${params.join("&")}`;
 
     const resp = await axios.get(url);
     dispatch({

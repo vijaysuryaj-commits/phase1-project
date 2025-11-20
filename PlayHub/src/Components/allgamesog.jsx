@@ -1,9 +1,5 @@
 import React, { Component } from "react";
-import CreateCard from "./CreateCard";
-import { withRouter } from "../Helpers/withRouter";
-import { connect } from "react-redux";
-import { fetchFilteredGames, fetchGames } from "../redux/games/gameActions";
-import { setSelectedGenre, setPlatform, setSortBy, } from "../redux/filters/filterActions";
+import axios from "axios";
 import {
   Box,
   Typography,
@@ -18,79 +14,82 @@ import {
   Menu,
   Divider,
 } from "@mui/material";
+import CreateCard from "./CreateCard";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import { withRouter } from "../Helpers/withRouter";
+import { useAuth } from "../context/AuthContext";
+
+function withAuth(Component) {
+  return function AuthWrapped(props) {
+    const auth = useAuth();
+    return <Component {...props} auth={auth} />;
+  };
+}
 
 class AllGamesSection extends Component {
-  state = {
-    currentPage: 1,
-    gamesPerPage: 12,
-    // loading: true,
-    anchorEl: null,
-    tempSortBy: "release-date",
-    tempPlatform: "",
-    tempCategory: "",
+  constructor(props) {
+    super(props);
+    this.state = {
+      games: [],
+      loading: true,
+      error: null,
+      currentPage: 1,
+      gamesPerPage: 12,
+      sortBy: "release-date",
+      platform: "",
+      anchorEl: null,
+
+      tempSortBy: "release-date",
+      tempPlatform: "",
+      tempCategory: props.selectedGenre || "",
+    };
   }
 
-  handlePageChange = (event, value) => {
-    this.setState({ currentPage: value });
-    const el = document.getElementById("all-games-section");
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-
-  componentDidMount() {
-    console.log('*********** All games did mount')
-    const { selectedGenre, platform, sortBy } = this.props;
-
-    this.setState({
-      tempSortBy: "release-date",
-      tempPlatform: platform,
-      tempCategory: selectedGenre,
-    })
-    // fetchFilteredGames({ selectedGenre, platform, sortBy });
-    // this.setState({
-    //   // loading: false,
-    //   // currentPage: 1,
-    // });
-    // fetchFilteredGames({
-    //   selectedGenre: selectedGenre,
-    //   platform: platform,
-    //   sortBy: sortBy,
-    // });
+  async componentDidMount() {
+    await this.fetchGames();
   }
 
   async componentDidUpdate(prevProps) {
-    console.log('***********All games did update')
-    const { selectedGenre, platform, sortBy, fetchFilteredGames } = this.props;
-
-    if (
-      prevProps.selectedGenre !== selectedGenre ||
-      prevProps.platform !== platform ||
-      prevProps.sortBy !== sortBy
-    ) {
-      console.log('**********All games did update inside if')
-      try {
-        // fetchFilteredGames({ selectedGenre, platform, sortBy });
-        console.log("*********All games component did update api call");
-        // fetchFilteredGames({
-        //   selectedGenre: selectedGenre,
-        //   platform: platform,
-        //   sortBy: sortBy,
-        // });
-        this.setState({
-          // currentPage: 1,
-          tempCategory: selectedGenre || "",
-          tempPlatform: platform || "",
-          tempSortBy: sortBy || "release-date"
-          // loading: false
-        });
-        await fetchFilteredGames({ selectedGenre, platform: this.state.tempPlatform, sortBy: this.state.tempSortBy });
-      } catch (error) {
-        // this.setState({ loading: false });
-
-      }
+    if (prevProps.selectedGenre !== this.props.selectedGenre) {
+      await this.fetchGames();
+      this.setState({
+        tempCategory: this.props.selectedGenre || "",
+      });
     }
   }
+
+  async fetchGames() {
+    this.setState({ loading: true, error: null });
+    try {
+      let url = "/api/games";
+      const params = [];
+
+      const { sortBy, platform } = this.state;
+      const { selectedGenre } = this.props;
+
+      if (selectedGenre)
+        params.push(
+          `category=${encodeURIComponent(
+            selectedGenre.toLowerCase().replace(/\s+/g, "-")
+          )}`
+        );
+      if (platform) params.push(`platform=${platform}`);
+      if (sortBy) params.push(`sort-by=${sortBy}`);
+
+      if (params.length > 0) url += `?${params.join("&")}`;
+
+      const response = await axios.get(url, { timeout: 10000 });
+      this.setState({
+        games: response.data,
+        loading: false,
+        currentPage: 1,
+      });
+    } catch (error) {
+      console.error(error);
+      this.setState({ error: "Failed to load games", loading: false });
+    }
+  }
+
   handleFilterMenuOpen = (event) => this.setState({ anchorEl: event.currentTarget });
   handleFilterMenuClose = () => this.setState({ anchorEl: null });
 
@@ -98,24 +97,9 @@ class AllGamesSection extends Component {
     this.setState({ [key]: value });
   };
 
-  setReduxStore = async (tempPlatform, tempCategory, tempSortBy) => {
-    console.log('-----',)
-    const { setPlatform, setSelectedGenre, setSortBy } = this.props
-    await setPlatform(tempPlatform)
-    await setSelectedGenre(tempCategory)
-    await setSortBy(tempSortBy)
-  }
-
   handleApplyFilters = async () => {
-    const { tempSortBy, tempPlatform, tempCategory } = this.state;
-    const {
-      selectedGenre,
-      setSelectedGenre,
-      fetchFilteredGames,
-      setSortBy,
-      platform,
-      setPlatform,
-      sortBy } = this.props;
+    const { tempSortBy, tempPlatform, tempCategory, sortBy, platform } = this.state;
+    const { selectedGenre, setSelectedGenre } = this.props;
 
     const changed =
       tempSortBy !== sortBy ||
@@ -123,135 +107,92 @@ class AllGamesSection extends Component {
       tempCategory !== selectedGenre;
 
     if (changed) {
-      // this.setState({
-      //   sortBy: tempSortBy,
-      //   platform: tempPlatform,
-      //   anchorEl: null,
-      // });
-
-      this.setState({
+      await this.setState({
+        sortBy: tempSortBy,
+        platform: tempPlatform,
         anchorEl: null,
-        // tempCategory: tempCategory,
-        // tempPlatform: tempPlatform,
-        // tempSortBy: tempSortBy
       });
-
-      await this.setReduxStore(tempPlatform, tempCategory, tempSortBy)
-
-      // await setPlatform(tempPlatform)
-      // await setSelectedGenre(tempCategory)
-      // await setSortBy(tempSortBy)
-
-      console.log("redux -" + selectedGenre + " tempCategory -" + tempCategory)
-      console.log("redux -" + platform + " tempPlatform -" + tempPlatform)
-      console.log("redux -" + sortBy + " tempSortBy -" + tempSortBy)
-      console.log("All games - handleApplyFilters")
-
-      // setTimeout(fetch = async () => {
-      // await fetchFilteredGames({ selectedGenre: tempCategory, platform: tempPlatform, sortBy: tempSortBy });
-      // }, 0)
+      setSelectedGenre(tempCategory || null);
+      await this.fetchGames();
     } else {
       this.setState({ anchorEl: null });
     }
   };
 
-
   handleRemoveFilter = async (key) => {
-    // const { tempSortBy, tempPlatform, tempCategory } = this.state;
-    const { selectedGenre,
-      setSelectedGenre,
-      fetchFilteredGames,
-      setSortBy,
-      platform,
-      setPlatform,
-      sortBy } = this.props;
+    const { setSelectedGenre } = this.props;
 
-    // let category = selectedGenre;
-    let tempCat = this.state.tempCategory;
-    let tempPlat = this.state.tempPlatform;
-    let tempSort = this.state.tempSortBy;
+    let { sortBy, platform } = this.state;
+    let category = this.props.selectedGenre;
 
     if (key === "category") {
-      // category = null;
-      setSelectedGenre("");
+      category = null;
+      setSelectedGenre(null);
       this.setState({ tempCategory: "" });
-      tempCat = ""
-      console.log()
     }
     if (key === "platform") {
-      setPlatform("")
-      this.setState({ tempPlatform: "" });
-      tempPlat = ""
+      platform = "";
+      this.setState({ platform: "", tempPlatform: "" });
     }
     if (key === "sortBy") {
-      setSortBy("release-date");
-      this.setState({ tempSortBy: "release-date" });
-      tempSort = ''
+      sortBy = "release-date";
+      this.setState({ sortBy: "release-date", tempSortBy: "release-date" });
     }
-    console.log("redux -" + selectedGenre + " tempCategory -" + this.state.tempCategory)
-    console.log("redux -" + platform + " tempPlatform -" + this.state.tempPlatform)
-    console.log("redux -" + sortBy + " tempSortBy -" + this.state.tempSortBy)
 
+    await this.setState({ sortBy, platform });
     const anyActive =
-      (selectedGenre && selectedGenre !== "") ||
-      (platform && platform !== "") ||
-      (sortBy && sortBy !== "release-date");
+      category || (platform && platform !== "") || (sortBy && sortBy !== "release-date");
 
     if (anyActive) {
-      console.log("All games - handleRemoveFilter any active true")
-      await fetchFilteredGames({ selectedGenre: tempCat, platform: tempPlat, sortBy: tempSort });
-    }
-    else {
-      // setSelectedGenre("")
-      // setPlatform("")
-      // setSortBy("release-date")
-      // this.setState({
-      //   tempCategory: "",
-      //   tempPlatform: "",
-      //   tempSortBy: "release-date",
-      // });
-      // fetchFilteredGames({ selectedGenre, platform, sortBy });
-      console.log("All games - handleRemoveFilter any active false")
-
-      fetchFilteredGames();
+      await this.fetchGames();
+    } else {
+      await this.setState({
+        sortBy: "release-date",
+        platform: "",
+        tempCategory: "",
+        tempPlatform: "",
+        tempSortBy: "release-date",
+      });
+      await this.fetchGames();
     }
   };
 
   handleClearAll = async () => {
-    const { setSelectedGenre, setPlatform, setSortBy, fetchGames } = this.props;
+    const { setSelectedGenre } = this.props;
 
-    fetchGames();
-
-    setSelectedGenre("");
-    setPlatform("")
-    setSortBy("release-date")
     this.setState({
+      platform: "",
+      sortBy: "release-date",
       tempCategory: "",
       tempPlatform: "",
       tempSortBy: "release-date",
     });
-    console.log("All games - handleClearAll")
+    setSelectedGenre(null);
+    await this.fetchGames();
+  };
 
+  handlePageChange = (event, value) => {
+    this.setState({ currentPage: value });
+    const el = document.getElementById("all-games-section");
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   render() {
     const {
-      // games,
-      filteredGames,
+      games,
       loading,
       error,
-      selectedGenre,
-      sortBy,
-      platform,
-      navigate } = this.props
-
-    const {
       gamesPerPage,
       currentPage,
+      sortBy,
+      platform,
       anchorEl,
-      tempCategory,
+      tempSortBy,
       tempPlatform,
-      tempSortBy } = this.state
+      tempCategory,
+    } = this.state;
+
+    const { navigate, selectedGenre } = this.props;
 
     const categories = [
       "MMORPG",
@@ -268,22 +209,16 @@ class AllGamesSection extends Component {
       "Social",
       "Sports",
     ];
-    {
-      console.log("redux $$$$$$$$$$$$$$$$$$ -" + selectedGenre + " tempCategory -" + tempCategory)
-      console.log("redux $$$$$$$$$$$$$$$$$$$ -" + platform + " tempPlatform -" + tempPlatform)
-      console.log("redux $$$$$$$$$$$$$$$$$$ -" + sortBy + " tempSortBy -" + tempSortBy)
-      console.log("All games $$$$$$$$$$$$$$$$$$$$ - handleApplyFilters")
-    }
 
     const indexOfLast = currentPage * gamesPerPage;
     const indexOfFirst = indexOfLast - gamesPerPage;
-    const currentGames = filteredGames.slice(indexOfFirst, indexOfLast);
-    const totalPages = Math.ceil(filteredGames.length / gamesPerPage);
+    const currentGames = games.slice(indexOfFirst, indexOfLast);
+    const totalPages = Math.ceil(games.length / gamesPerPage);
     const open = Boolean(anchorEl);
-    const activeFilters = [];
 
+    const activeFilters = [];
     if (selectedGenre)
-      activeFilters.push({ label: selectedGenre, key: "category" })
+      activeFilters.push({ label: selectedGenre, key: "category" });
     if (platform)
       activeFilters.push({ label: platform.toUpperCase(), key: "platform" });
     if (sortBy && sortBy !== "release-date") {
@@ -414,7 +349,7 @@ class AllGamesSection extends Component {
             <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel sx={{ color: "orange" }}>Category</InputLabel>
               <Select
-                value={tempCategory || selectedGenre}
+                value={tempCategory}
                 label="Category"
                 onChange={(e) =>
                   this.handleTempChange("tempCategory", e.target.value)
@@ -441,8 +376,7 @@ class AllGamesSection extends Component {
             <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel sx={{ color: "orange" }}>Platform</InputLabel>
               <Select
-                value={tempPlatform || platform}
-
+                value={tempPlatform}
                 label="Platform"
                 onChange={(e) =>
                   this.handleTempChange("tempPlatform", e.target.value)
@@ -576,133 +510,48 @@ class AllGamesSection extends Component {
             )}
           </>
         )}
-
       </Box>
     );
-
-    // if (loading) {
-    //   return (
-    //     <Box sx={{ padding: { xs: 2, sm: 4 } }} id="all-games-section">
-    //       <Typography
-    //         variant="h5"
-    //         fontWeight="bold"
-    //         textAlign="center"
-    //         sx={{ color: "orange", textShadow: "0 0 8px orange" }}
-    //         mb={3}
-    //       >
-    //         Loading Games...
-    //       </Typography>
-    //       <Box
-    //         display="grid"
-    //         gridTemplateColumns={{
-    //           xs: "1fr",
-    //           sm: "repeat(2, 1fr)",
-    //           md: "repeat(4, 1fr)",
-    //         }}
-    //         gap={2}
-    //       >
-    //         {[...Array(8)].map((_, i) => (
-    //           <Skeleton
-    //             key={i}
-    //             variant="rectangular"
-    //             height={180}
-    //             sx={{
-    //               borderRadius: 2,
-    //               backgroundColor: "rgba(255,255,255,0.08)",
-    //             }}
-    //           />
-    //         ))}
-    //       </Box>
-    //     </Box>
-    //   );
-    // }
-
-    // if (error) {
-    //   return (
-    //     <Typography textAlign="center" color="error" sx={{ mt: 4 }}>
-    //       {error}
-    //     </Typography>
-    //   );
-    // }
-
-    // return (
-    //   <Box sx={{ padding: { xs: 2, sm: 4, md: 6 } }} id="all-games-section">
-    //     <Typography
-    //       variant="h5"
-    //       fontWeight="bold"
-    //       textAlign="center"
-    //       sx={{ mb: 4, color: "orange", textShadow: "0 0 8px rgba(255,165,0,0.8)" }}
-    //     >
-    //       All Games
-    //     </Typography>
-
-    //     <Divider sx={{ mb: 4, borderColor: "rgba(255,165,0,0.3)" }} />
-
-    //     <Box
-    //       display="grid"
-    //       gridTemplateColumns={{
-    //         xs: "1fr",
-    //         sm: "repeat(2, 1fr)",
-    //         md: "repeat(4, 1fr)",
-    //       }}
-    //       gap={2}
-    //     >
-    //       {games.map((game) => (
-    //         <CreateCard key={game.id} navigate={navigate} game={game} />
-    //       ))}
-    //     </Box>
-    //     {
-    //       totalPages > 1 && (
-    //         <Box display="flex" justifyContent="center" mt={4}>
-    //           <Pagination
-    //             count={totalPages}
-    //             page={currentPage}
-    //             onChange={this.handlePageChange}
-    //             sx={{
-    //               "& .MuiPaginationItem-root": {
-    //                 color: "white",
-    //                 "&.Mui-selected": {
-    //                   backgroundColor: "orange",
-    //                   color: "#000",
-    //                   "&:hover": {
-    //                     backgroundColor: "orange",
-    //                     color: "white",
-    //                   },
-    //                 },
-    //                 "&:hover": {
-    //                   backgroundColor: "orange",
-    //                   color: "black",
-    //                 },
-    //               }
-    //             }}
-    //           />
-    //         </Box>
-    //       )
-    //     }
-    //   </Box>
-    // );
   }
 }
 
-const mapStateToProps = (state) => ({
-  games: state.gamesState.games,
-  filteredGames: state.gamesState.filteredGames,
-  loading: state.gamesState.loading,
-  error: state.gamesState.error,
-  selectedGenre: state.filtersState.selectedGenre,
-  platform: state.filtersState.platform,
-  sortBy: state.filtersState.sortBy,
-});
+export default withRouter(withAuth(AllGamesSection));
 
-const mapDispatchToProps = {
-  fetchGames,
-  fetchFilteredGames,
-  setSelectedGenre,
-  setPlatform,
-  setSortBy,
+
+
+
+
+
+
+
+
+export const fetchGames = (filters = {}) => async (dispatch) => {
+  dispatch({ type: types.FETCH_GAMES_REQUEST });
+  try {
+    let url = "/api/games";
+    const params = [];
+
+    const platform = normalizePlatform(filters.platform);
+    const sortBy = normalizeSort(filters.sortBy, platform);
+
+    if (filters.selectedGenre) {
+      params.push(`category=${encodeURIComponent(filters.selectedGenre.toLowerCase().replace(/\s+/g, "-"))}`);
+    }
+    if (platform) params.push(`platform=${platform}`);
+    if (sortBy) params.push(`sort-by=${sortBy}`);
+
+    if (params.length)
+      url += `?${params.join("&")}`;
+
+    const resp = await axios.get(url);
+    dispatch({
+      type: types.FETCH_GAMES_SUCCESS,
+      payload: Array.isArray(resp.data) ? resp.data : []
+    });
+  } catch (err) {
+    dispatch({
+      type: types.FETCH_GAMES_FAILURE,
+      payload: err.message || "Failed to fetch games"
+    });
+  }
 };
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(withRouter(AllGamesSection));

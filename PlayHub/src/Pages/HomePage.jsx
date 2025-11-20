@@ -367,38 +367,31 @@ class HomePage extends Component {
 
     this.props.fetchPopularGames();
 
-    this.props.fetchGames({
-      selectedGenre: this.props.selectedGenre,
-      platform: this.props.platform,
-      sortBy: this.props.sortBy,
-    });
+    this.props.fetchGames();
+    console.log("*********HomePage did mount");
 
     if (this.props.searchQuery) {
       this.props.doSearch(this.props.searchQuery);
     }
   }
 
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.updateWidth);
-  }
-
   componentDidUpdate(prevProps) {
-    if (
-      prevProps.selectedGenre !== this.props.selectedGenre ||
-      prevProps.platform !== this.props.platform ||
-      prevProps.sortBy !== this.props.sortBy
-    ) {
-      this.props.fetchGames({
-        selectedGenre: this.props.selectedGenre,
-        platform: this.props.platform,
-        sortBy: this.props.sortBy,
-      });
+    // if (
+    //   prevProps.selectedGenre !== this.props.selectedGenre ||
+    //   prevProps.platform !== this.props.platform ||
+    //   prevProps.sortBy !== this.props.sortBy
+    // ) {
+    //   this.props.fetchGames({
+    //     selectedGenre: this.props.selectedGenre,
+    //     platform: this.props.platform,
+    //     sortBy: this.props.sortBy,
+    //   });
 
-      if (prevProps.selectedGenre !== this.props.selectedGenre) {
-        const el = document.getElementById("all-games-section");
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
+    //   if (prevProps.selectedGenre !== this.props.selectedGenre) {
+    //     const el = document.getElementById("all-games-section");
+    //     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    //   }
+    // }
 
     if (prevProps.searchQuery !== this.props.searchQuery) {
       if (this.props.searchQuery) {
@@ -409,6 +402,10 @@ class HomePage extends Component {
     }
   }
 
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateWidth);
+  }
+
   updateWidth = () => this.setState({ width: window.innerWidth });
 
   render() {
@@ -416,7 +413,7 @@ class HomePage extends Component {
 
     const {
       popular,
-      games,
+      // games,
       searchResults,
       loading,
       error,
@@ -642,7 +639,7 @@ const mapStateToProps = (state) => ({
   games: state.gamesState.games,
   searchResults: state.gamesState.searchResults,
   loading: state.gamesState.loading,
-  searching: state.gamesState.loading, 
+  searching: state.gamesState.loading,
   error: state.gamesState.error,
   searchQuery: state.gamesState.searchQuery,
 });
@@ -650,7 +647,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   fetchPopularGames,
-  fetchGames, 
+  fetchGames,
   doSearch,
   clearSearchResults,
   clearSearchQuery,
