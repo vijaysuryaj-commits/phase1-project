@@ -52,7 +52,7 @@ class AllGamesSection extends Component {
     //   // loading: false,
     //   // currentPage: 1,
     // });
-    // fetchFilteredGames({
+    // fetchFilteredGames({fetchFilteredGames
     //   selectedGenre: selectedGenre,
     //   platform: platform,
     //   sortBy: sortBy,
@@ -85,6 +85,8 @@ class AllGamesSection extends Component {
           // loading: false
         });
         await fetchFilteredGames({ selectedGenre, platform: this.state.tempPlatform, sortBy: this.state.tempSortBy });
+        const el = document.getElementById("all-games-section");
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
       } catch (error) {
         // this.setState({ loading: false });
 
@@ -200,6 +202,8 @@ class AllGamesSection extends Component {
     if (anyActive) {
       console.log("All games - handleRemoveFilter any active true")
       await fetchFilteredGames({ selectedGenre: tempCat, platform: tempPlat, sortBy: tempSort });
+      const el = document.getElementById("all-games-section");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
     else {
       // setSelectedGenre("")
@@ -214,6 +218,8 @@ class AllGamesSection extends Component {
       console.log("All games - handleRemoveFilter any active false")
 
       fetchFilteredGames();
+      const el = document.getElementById("all-games-section");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 

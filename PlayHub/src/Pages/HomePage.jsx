@@ -357,22 +357,16 @@ class HomePage extends Component {
     super(props);
     this.state = {
       width: window.innerWidth,
-      isClient: false,
     };
   }
 
   componentDidMount() {
-    this.setState({ isClient: true });
     window.addEventListener("resize", this.updateWidth);
 
     this.props.fetchPopularGames();
 
     this.props.fetchGames();
     console.log("*********HomePage did mount");
-
-    if (this.props.searchQuery) {
-      this.props.doSearch(this.props.searchQuery);
-    }
   }
 
   componentDidUpdate(prevProps) {
@@ -409,7 +403,7 @@ class HomePage extends Component {
   updateWidth = () => this.setState({ width: window.innerWidth });
 
   render() {
-    const { width, isClient } = this.state;
+    const { width } = this.state;
 
     const {
       popular,
@@ -424,7 +418,7 @@ class HomePage extends Component {
       navigate,
     } = this.props;
 
-    if (!isClient) return null;
+   
 
     if (loading)
       return (

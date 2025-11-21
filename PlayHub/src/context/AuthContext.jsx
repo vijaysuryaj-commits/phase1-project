@@ -8,7 +8,11 @@ export class AuthProvider extends Component {
         users: JSON.parse(localStorage.getItem("users")) || [],
         currentUser: JSON.parse(localStorage.getItem("currentUser")) || null,
         error: null,
-        snackbar: { open: false, message: "", severity: "success" },
+        snackbar: {
+            open: false,
+            message: "",
+            severity: "success"
+        },
     };
 
     updateLocalStorage = () => {

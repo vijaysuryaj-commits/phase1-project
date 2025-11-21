@@ -148,7 +148,7 @@ function App() {
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
-                backgroundAttachment: { xs: "scroll", md: "fixed" },
+                backgroundAttachment: "fixed" ,
                 position: "relative",
                 display: "flex",
                 flexDirection: "column",
@@ -193,7 +193,7 @@ function App() {
                 <Toolbar />
               </Box>
 
-              <Box sx={{ position: "relative", zIndex: 1 }}>
+              <Box sx={{ zIndex: 1 }}>
                 <Footer />
               </Box>
             </Box>
