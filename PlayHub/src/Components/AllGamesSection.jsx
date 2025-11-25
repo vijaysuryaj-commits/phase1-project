@@ -518,7 +518,7 @@ class AllGamesSection extends Component {
             gap={2}
           >
             {[...Array(8)].map((_, i) => (
-              <Skeleton
+              <Skeleton data-testid='skeleton'
                 key={i}
                 variant="rectangular"
                 height={220}
